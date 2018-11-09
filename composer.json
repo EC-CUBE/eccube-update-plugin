@@ -1,0 +1,9 @@
+{
+  "name": "ec-cube/EccubeUpdater",
+  "version": "1.0.0",
+  "description": "eccube-update-plugin",
+  "type": "eccube-plugin",
+  "extra": {
+    "code": "EccubeUpdater"
+  }
+}
