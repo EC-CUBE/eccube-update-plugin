@@ -23,6 +23,20 @@
                         <div class="card-header"><span>アップデートの注意点</span></div>
                         <div class="card-body">
                             <div class="row">
+                                <div class="col mb-2">
+                                    <ul>
+                                        <li>・この手順では、ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
+                                        <li>・本番環境でバージョンアップを行う前に、必ずテスト環境で事前検証を行ってください。</li>
+                                        <li>・本番環境でバージョンアップを行う前に、必ずファイルのバックアップを行ってください</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>リリースノート</span></div>
+                        <div class="card-body">
+                            <div class="row">
                                 <div class="col-3"><span></span></div>
                                 <div class="col mb-2">
                                     {#{{ form_widget(form.name) }}#}
@@ -31,26 +45,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="c-conversionArea">
-            <div class="c-conversionArea__container">
-                <div class="row justify-content-between align-items-center">
-                    <div class="col-6">
-                        <div class="c-conversionArea__leftBlockItem">
-                            <a class="c-baseLink"
-                               href="{{ url('admin_store_plugin') }}">
-                                <i class="fa fa-backward" aria-hidden="true"></i>
-                                <span>プラグイン一覧</span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="row align-items-center justify-content-end">
-                            <div class="col-auto">
-                                <button class="btn btn-ec-conversion px-5"
-                                        type="submit">アップデート</button>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-body">
+                            <div class="text-center">
+                                <a class="btn btn-ec-regular"  href="">アップデート</a>
                             </div>
                         </div>
                     </div>
