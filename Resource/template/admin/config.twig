@@ -1,0 +1,59 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}本体アップデート{% endblock %}
+{% block sub_title %}{% endblock %}
+
+{#{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}#}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block javascript %}{% endblock javascript %}
+
+{% block main %}
+    <form role="form" method="post">
+
+        {#{{ form_widget(form._token) }}#}
+
+        <div class="c-contentsArea__cols">
+            <div class="c-contentsArea__primaryCol">
+                <div class="c-primaryCol">
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>アップデートの注意点</span></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col mb-2">
+                                    <ul>
+                                        <li>・この手順では、ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
+                                        <li>・本番環境でバージョンアップを行う前に、必ずテスト環境で事前検証を行ってください。</li>
+                                        <li>・本番環境でバージョンアップを行う前に、必ずファイルのバックアップを行ってください</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>リリースノート</span></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-3"><span></span></div>
+                                <div class="col mb-2">
+                                    {#{{ form_widget(form.name) }}#}
+                                    {#{{ form_errors(form.name) }}#}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-body">
+                            <div class="text-center">
+                                <a class="btn btn-ec-regular"  href="">アップデート</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
