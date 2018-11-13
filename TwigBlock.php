@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugin\EccubeUpdater;
+namespace Plugin\EccubeUpdater400to401;
 
 use Eccube\Common\EccubeTwigBlock;
 

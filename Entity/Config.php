@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugin\EccubeUpdater\Entity;
+namespace Plugin\EccubeUpdater400to401\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Config
  *
  * @ORM\Table(name="plg_eccube_updater_config")
- * @ORM\Entity(repositoryClass="Plugin\EccubeUpdater\Repository\ConfigRepository")
+ * @ORM\Entity(repositoryClass="Plugin\EccubeUpdater400to401\Repository\ConfigRepository")
  */
 class Config
 {

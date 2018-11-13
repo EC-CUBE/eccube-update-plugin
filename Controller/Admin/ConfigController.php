@@ -1,11 +1,11 @@
 <?php
 
-namespace Plugin\EccubeUpdater\Controller\Admin;
+namespace Plugin\EccubeUpdater400to401\Controller\Admin;
 
 use Eccube\Common\EccubeConfig;
 use Eccube\Controller\AbstractController;
-use Plugin\EccubeUpdater\Form\Type\Admin\ConfigType;
-use Plugin\EccubeUpdater\Repository\ConfigRepository;
+use Plugin\EccubeUpdater400to401\Form\Type\Admin\ConfigType;
+use Plugin\EccubeUpdater400to401\Repository\ConfigRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,8 +33,8 @@ class ConfigController extends AbstractController
     }
 
     /**
-     * @Route("/%eccube_admin_route%/eccube_updater/config", name="eccube_updater_admin_config")
-     * @Template("@EccubeUpdater/admin/config.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/config", name="eccube_updater400to401_admin_config")
+     * @Template("@EccubeUpdater400to401/admin/config.twig")
      */
     public function index(Request $request)
     {
@@ -60,24 +60,24 @@ class ConfigController extends AbstractController
      * 変更ファイルの競合を調査
      *
      * @Route("/%eccube_admin_route%/eccube_updater/check_source", name="eccube_updater_admin_check_source")
-     * @Template("@EccubeUpdater/admin/check_source.twig")
+     * @Template("@EccubeUpdater400to401/admin/check_source.twig")
      */
     public function checkSource(Request $request)
     {
-        // TODO: 暫定データなのでhashを作り直す
-        // TODO: 対象ファイルの精査も必要
-        // TODO: 改行コード違い等も考慮する必要がある
 
-        $fileHash = Yaml::parseFile($this->eccubeConfig->get('plugin_realdir') . "/EccubeUpdater" . '/Resource/file_hash/4.0.0.yaml');
+        $fileHash = Yaml::parseFile($this->eccubeConfig->get('plugin_realdir') . "/EccubeUpdater400to401" . '/Resource/file_hash/4.0.0.yaml');
+        $fileHashCrlf = Yaml::parseFile($this->eccubeConfig->get('plugin_realdir') . "/EccubeUpdater400to401" . '/Resource/file_hash/4.0.0_crlf.yaml');
 
-        $changes = array_filter($fileHash, function($hash, $file) {
-            $filePath = $this->eccubeConfig->get('kernel.project_dir').'/'.$file;
+        $changes = [];
+        foreach ($fileHash as $file => $hash) {
+            $filePath = $this->eccubeConfig->get('kernel.project_dir') . '/' . $file;
             if (file_exists($filePath)) {
-                return hash_file('md5', $filePath) !== $hash;
-            } else {
-                return true;
+                $hash = hash_file('md5', $filePath);
+                if($fileHash[$file] != $hash && $fileHashCrlf[$file] != $hash) {
+                    $changes[] = $file;
+                }
             }
-        }, ARRAY_FILTER_USE_BOTH);
+        }
 
         return [
             'changes' => $changes,

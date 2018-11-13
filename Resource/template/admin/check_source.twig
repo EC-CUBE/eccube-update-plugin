@@ -29,8 +29,8 @@
                                 <div class="col mb-2">
                                     <div class="alert alert-danger border border-danger">
                                         <ul>
-                                            {% for key,hash in changes %}
-                                                <li>{{ key }}</li>
+                                            {% for file in changes %}
+                                                <li>{{ file }}</li>
                                             {% endfor %}
                                         </ul>
                                     </div>

@@ -1,8 +1,8 @@
 <?php
 
-namespace Plugin\EccubeUpdater\Form\Type\Admin;
+namespace Plugin\EccubeUpdater400to401\Form\Type\Admin;
 
-use Plugin\EccubeUpdater\Entity\Config;
+use Plugin\EccubeUpdater400to401\Entity\Config;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
