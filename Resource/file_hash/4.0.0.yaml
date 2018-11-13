@@ -49,7 +49,6 @@
 ./bin/phpunit: 85d90794dcf4f9cb432423855b7547bd
 ./bin/console: 3927fbc7d5a8ac5f01d85286e3341b42
 ./bin/.htaccess: fda618bbd78144afa3fc741d29bfcede
-./file_hash.yaml: d41d8cd98f00b204e9800998ecf8427e
 ./web.config: 19347a4d9ee029ee1dbbe05117a305f8
 ./.env.dist: b6479f2772111f1bbeaf7c2a9bf65678
 ./html/template/install/css/admin_contents.css: 0b464e3618291261c75504b50ef9d00b
