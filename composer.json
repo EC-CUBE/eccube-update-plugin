@@ -1,9 +1,9 @@
 {
-  "name": "ec-cube/EccubeUpdater",
+  "name": "ec-cube/EccubeUpdater400to401",
   "version": "1.0.0",
   "description": "eccube-update-plugin",
   "type": "eccube-plugin",
   "extra": {
-    "code": "EccubeUpdater"
+    "code": "EccubeUpdater400to401"
   }
 }

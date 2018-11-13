@@ -1,9 +1,9 @@
 <?php
 
-namespace Plugin\EccubeUpdater\Repository;
+namespace Plugin\EccubeUpdater400to401\Repository;
 
 use Eccube\Repository\AbstractRepository;
-use Plugin\EccubeUpdater\Entity\Config;
+use Plugin\EccubeUpdater400to401\Entity\Config;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**

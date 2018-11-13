@@ -1,0 +1,61 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}本体アップデート（ソースの変更確認）{% endblock %}
+{% block sub_title %}{% endblock %}
+
+{#{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}#}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block javascript %}{% endblock javascript %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="card rounded border-0 mb-4">
+                    {% if changes|length <= 0 %}
+                        <div class="card-header">
+                            <span>ソースの変更はありません。</span>
+                        </div>
+                    {% else %}
+                        <div class="card-header">
+                            <span>以下の{{ changes|length }}ファイルが変更されています.</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col mb-2">
+                                    <div class="alert alert-danger border border-danger">
+                                        <ul>
+                                            {% for file in changes %}
+                                                <li>{{ file }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col mb-2">
+                                    <ul>
+                                        <li>・アップデートを継続するとファイルが上書きされます。この操作は取り消せません。</li>
+                                        <li>・カスタマイズされている部分は正しく動作しない可能性があります。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <a class="btn btn-ec-regular" href="{{ path('admin_store_plugin') }}">中止</a>
+                            <a class="btn btn-ec-regular" href="{{ path('eccube_updater_admin_check_source') }}">最新バージョンで上書き</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
