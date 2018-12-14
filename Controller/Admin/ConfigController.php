@@ -89,7 +89,7 @@ class ConfigController extends AbstractController
         $this->supported = version_compare(Constant::VERSION, '4.0.0', '=');
         $this->projectDir = realpath($eccubeConfig->get('kernel.project_dir'));
         $this->varDir = realpath($this->projectDir.'/var');
-        $this->extractDir = realpath($this->varDir.'/4.0.0...4.0.1');
+        $this->extractDir = $this->varDir.'/4.0.0...4.0.1';
         $this->updateFile = realpath(__DIR__.'/../../Resource/update_file/4.0.0...4.0.1.tar.gz');
     }
 
