@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "eccube-update-plugin",
   "type": "eccube-plugin",
+  "require": {
+    "ec-cube/plugin-installer": "~0.0.8"
+  },
   "extra": {
     "code": "EccubeUpdater400to401"
   }

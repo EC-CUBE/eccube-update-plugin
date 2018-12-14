@@ -1,0 +1,24 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}EC-CUBEのアップデート（完了）{% endblock %}
+{% block sub_title %}{% endblock %}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block javascript %}{% endblock javascript %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header">
+                        <span>EC-CUBEのバージョンアップが完了しました。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

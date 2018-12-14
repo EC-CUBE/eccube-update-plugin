@@ -2,10 +2,8 @@
 
 {% set menus = ['store', 'plugin', 'plugin_list'] %}
 
-{% block title %}本体アップデート（ソースの変更確認）{% endblock %}
+{% block title %}EC-CUBEのアップデート（ソースコードの変更確認）{% endblock %}
 {% block sub_title %}{% endblock %}
-
-{#{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}#}
 
 {% block stylesheet %}{% endblock stylesheet %}
 
@@ -50,8 +48,36 @@
                 <div class="card rounded border-0 mb-4">
                     <div class="card-body">
                         <div class="text-center">
-                            <a class="btn btn-ec-regular" href="{{ path('admin_store_plugin') }}">中止</a>
-                            <a class="btn btn-ec-regular" href="{{ path('eccube_updater_admin_check_source') }}">最新バージョンで上書き</a>
+                            <a class="btn btn-ec-regular"
+                               href="{{ path('eccube_updater400to401_admin_config') }}">中止</a>
+                            <button type="button" class="btn btn-ec-conversion" data-toggle="modal"
+                                    data-target="#copy_files">最新バージョンで上書き
+                            </button>
+                            <div class="modal fade" id="copy_files" tabindex="-1" role="dialog"
+                                 aria-labelledby="discontinuance" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title font-weight-bold">ファイルを上書きします</h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body text-left">
+                                            <p class="text-left">ファイルを上書きします。この操作は取り消せませんがよろしいですか？</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-ec-sub" type="button" data-dismiss="modal">キャンセル
+                                            </button>
+                                            <a class="btn btn-ec-delete"
+                                               href="{{ url('eccube_updater400to401_admin_update_files') }}" {{ csrf_token_for_anchor() }}
+                                               data-method="post" data-confirm="false">
+                                                最新バージョンで上書き
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

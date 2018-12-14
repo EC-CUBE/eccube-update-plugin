@@ -1,0 +1,60 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}EC-CUBEのアップデート（書き込み権限の確認）{% endblock %}
+{% block sub_title %}{% endblock %}
+
+{#{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}#}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block javascript %}{% endblock javascript %}
+
+{% block main %}
+    {% set is_ok = noWritePermissions|length <= 0 %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <form name="form" method="post" action="{{ is_ok ? url('eccube_updater400to401_admin_check_source') : url('eccube_updater400to401_admin_check_permission') }}">
+                    {{ form_widget(form._token) }}
+                    <div class="card rounded border-0 mb-4">
+                        {% if is_ok %}
+                            <div class="card-header">
+                                <span>書き込み権限は正常です。</span>
+                            </div>
+                        {% else %}
+                            <div class="card-header">
+                                <span>以下の{{ noWritePermissions|length }}ファイルおよびディレクトリに書き込み権限を与えてください。</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col mb-2">
+                                        <div class="alert alert-danger border border-danger">
+                                            <ul>
+                                                {% for file in noWritePermissions %}
+                                                    <li>{{ file }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-body">
+                            <div class="text-center">
+                                {% if is_ok %}
+                                    <button type="submit" class="btn btn-ec-conversion">ファイルの更新確認へ</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-ec-conversion">更新</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

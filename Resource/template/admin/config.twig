@@ -2,12 +2,12 @@
 
 {% set menus = ['store', 'plugin', 'plugin_list'] %}
 
-{% block title %}本体アップデート{% endblock %}
+{% block title %}EC-CUBEのアップデート{% endblock %}
 {% block sub_title %}{% endblock %}
 
-{#{% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}#}
-
-{% block stylesheet %}{% endblock stylesheet %}
+{% block stylesheet %}
+    <meta name="referrer" content="no-referrer">
+{% endblock stylesheet %}
 
 {% block javascript %}{% endblock javascript %}
 
@@ -15,39 +15,39 @@
     <div class="c-contentsArea__cols">
         <div class="c-contentsArea__primaryCol">
             <div class="c-primaryCol">
-                <div class="card rounded border-0 mb-4">
-                    <div class="card-header"><span>アップデートの注意点</span></div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col mb-2">
-                                <ul>
-                                    <li>・この手順では、ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
-                                    <li>・本番環境でバージョンアップを行う前に、必ずテスト環境で事前検証を行ってください。</li>
-                                    <li>・本番環境でバージョンアップを行う前に、必ずファイルのバックアップを行ってください</li>
-                                </ul>
+                <form name="form" method="post" action="{{ url('eccube_updater400to401_admin_check_permission') }}">
+                    {{ form_widget(form._token) }}
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>アップデートの注意点</span></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col mb-2">
+                                    <ul>
+                                        <li>・この手順では、ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
+                                        <li>・本番環境でバージョンアップを行う前に、必ずテスト環境で事前検証を行ってください。</li>
+                                        <li>・本番環境でバージョンアップを行う前に、必ずファイルのバックアップを行ってください</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card rounded border-0 mb-4">
-                    <div class="card-header"><span>リリースノート</span></div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-3"><span></span></div>
-                            <div class="col mb-2">
-                                {#{{ form_widget(form.name) }}#}
-                                {#{{ form_errors(form.name) }}#}
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header"><span>リリースノート</span></div>
+                        <div class="card-body">
+                            <iframe name="information" src="https://www.ec-cube.net/news/detail.php?news_id=311"
+                                    style="width:100%; border:0; min-height:300px;"></iframe>
+                        </div>
+                    </div>
+                    {% if supported %}
+                        <div class="card rounded border-0 mb-4">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-ec-conversion">書き込み権限の確認</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="card rounded border-0 mb-4">
-                    <div class="card-body">
-                        <div class="text-center">
-                            <a class="btn btn-ec-regular" href="{{ path('eccube_updater_admin_check_source') }}">ソースコードの変更確認</a>
-                        </div>
-                    </div>
-                </div>
+                    {% endif %}
+                </form>
             </div>
         </div>
     </div>
