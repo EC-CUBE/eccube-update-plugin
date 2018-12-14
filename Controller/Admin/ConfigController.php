@@ -23,7 +23,6 @@ use Eccube\Repository\PluginRepository;
 use Eccube\Service\Composer\ComposerApiService;
 use Eccube\Util\CacheUtil;
 use Eccube\Util\StringUtil;
-use Plugin\EccubeUpdater400to401\Repository\ConfigRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -39,11 +38,6 @@ use Symfony\Component\Yaml\Yaml;
 
 class ConfigController extends AbstractController
 {
-    /**
-     * @var ConfigRepository
-     */
-    protected $configRepository;
-
     /**
      * @var EccubeConfig
      */
@@ -77,11 +71,12 @@ class ConfigController extends AbstractController
     /**
      * ConfigController constructor.
      *
-     * @param ConfigRepository $configRepository
      * @param EccubeConfig $eccubeConfig
+     * @param PluginRepository $pluginRepository
+     * @param ComposerApiService $composerApiService
+     * @param KernelInterface $kernel
      */
     public function __construct(
-        ConfigRepository $configRepository,
         EccubeConfig $eccubeConfig,
         PluginRepository $pluginRepository,
         ComposerApiService $composerApiService,
@@ -90,7 +85,6 @@ class ConfigController extends AbstractController
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
         $this->composerApiService = $composerApiService;
-        $this->configRepository = $configRepository;
         $this->eccubeConfig = $eccubeConfig;
         $this->supported = version_compare(Constant::VERSION, '4.0.0', '=');
         $this->projectDir = realpath($eccubeConfig->get('kernel.project_dir'));
