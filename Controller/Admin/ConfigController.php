@@ -127,7 +127,12 @@ class ConfigController extends AbstractController
         $form = $this->createForm(FormType::class);
 
         if (!$this->supported) {
-            $this->addError('このプラグインは4.0.0〜4.0.1へのアップデートプラグインです', 'admin');
+            $this->addError('このプラグインは4.0.0〜4.0.1へのアップデートプラグインです。', 'admin');
+        }
+
+        if (function_exists('xdebug_is_enabled()') && xdebug_is_enabled()) {
+            $this->supported = false;
+            $this->addError('xdebugが有効になっています。無効にしてください。', 'admin');
         }
 
         return [
@@ -257,6 +262,8 @@ class ConfigController extends AbstractController
      */
     public function updateData(Request $request, CacheUtil $cacheUtil)
     {
+        set_time_limit(0);
+
         $form = $this->createForm(FormType::class);
         $form->handleRequest($request);
 
