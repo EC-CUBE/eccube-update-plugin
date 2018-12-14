@@ -304,9 +304,6 @@ class ConfigController extends AbstractController
         return [];
     }
 
-    /**
-     * @throws \Eccube\Exception\PluginException
-     */
     protected function execRequirePlugins()
     {
         $packageNames = [];
@@ -315,12 +312,12 @@ class ConfigController extends AbstractController
         $Plugins = [];
         try {
             $Plugins = $qb->select('p')
-                ->andWhere('p.source IS NOT NULL')
-                ->andWhere("p.source <> '0'")
+                ->where("p.source IS NOT NULL AND p.source <> '0' AND p.source <> ''")
                 ->orderBy('p.code', 'ASC')
                 ->getQuery()
                 ->getResult();
         } catch (NoResultException | NonUniqueResultException $e) {
+            log_error($e->getMessage());
         }
         foreach ($Plugins as $Plugin) {
             $packageNames[] = 'ec-cube/'.$Plugin->getCode().':'.$Plugin->getVersion();
