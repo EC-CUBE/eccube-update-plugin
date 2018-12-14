@@ -21,9 +21,12 @@ git diff --name-only --cached > ../update_files.txt
 git reset --hard HEAD
 while read file
 do
-    md5 $file | sed -e "s/MD5 (//" -e "s/) = /: /" >> ../file_hash.yaml
-    perl -p -i -e 's/\n/\r\n/g' $file
-    md5 $file | sed -e "s/MD5 (//" -e "s/) = /: /" >> ../file_hash_crlf.yaml
+    if [ -f $file]
+    then
+        md5 $file | sed -e "s/MD5 (//" -e "s/) = /: /" >> ../file_hash.yaml
+        perl -p -i -e 's/\n/\r\n/g' $file
+        md5 $file | sed -e "s/MD5 (//" -e "s/) = /: /" >> ../file_hash_crlf.yaml
+    fi
 done < ../update_files.txt
 
 cd ..
