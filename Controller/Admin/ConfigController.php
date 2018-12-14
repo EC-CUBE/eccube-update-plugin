@@ -19,6 +19,7 @@ use Eccube\Common\Constant;
 use Eccube\Common\EccubeConfig;
 use Eccube\Controller\AbstractController;
 use Eccube\Exception\PluginException;
+use Eccube\Repository\BaseInfoRepository;
 use Eccube\Repository\PluginRepository;
 use Eccube\Service\Composer\ComposerApiService;
 use Eccube\Util\CacheUtil;
@@ -42,6 +43,26 @@ class ConfigController extends AbstractController
      * @var EccubeConfig
      */
     protected $eccubeConfig;
+
+    /**
+     * @var KernelInterface
+     */
+    protected $kernel;
+
+    /**
+     * @var BaseInfoRepository
+     */
+    protected $baseInfoRepository;
+
+    /**
+     * @var PluginRepository
+     */
+    protected $pluginRepository;
+
+    /**
+     * @var ComposerApiService
+     */
+    protected $composerApiService;
 
     /**
      * @var bool
@@ -72,24 +93,28 @@ class ConfigController extends AbstractController
      * ConfigController constructor.
      *
      * @param EccubeConfig $eccubeConfig
+     * @param BaseInfoRepository $baseInfoRepository
      * @param PluginRepository $pluginRepository
      * @param ComposerApiService $composerApiService
      * @param KernelInterface $kernel
      */
     public function __construct(
         EccubeConfig $eccubeConfig,
+        BaseInfoRepository $baseInfoRepository,
         PluginRepository $pluginRepository,
         ComposerApiService $composerApiService,
         KernelInterface $kernel
     ) {
         $this->kernel = $kernel;
+        $this->baseInfoRepository = $baseInfoRepository;
         $this->pluginRepository = $pluginRepository;
         $this->composerApiService = $composerApiService;
         $this->eccubeConfig = $eccubeConfig;
         $this->supported = version_compare(Constant::VERSION, '4.0.0', '=');
         $this->projectDir = realpath($eccubeConfig->get('kernel.project_dir'));
         $this->varDir = realpath($this->projectDir.'/var');
-        $this->extractDir = $this->varDir.'/4.0.0...4.0.1';
+        @mkdir($this->varDir.'/4.0.0...4.0.1');
+        $this->extractDir = realpath($this->varDir.'/4.0.0...4.0.1');
         $this->updateFile = realpath(__DIR__.'/../../Resource/update_file/4.0.0...4.0.1.tar.gz');
     }
 
@@ -239,8 +264,11 @@ class ConfigController extends AbstractController
             // .envファイルを更新.
             $this->execUpdateDotEnv();
 
-            // プラグインのrequireを復元する.
-            $this->execRequirePlugins();
+            $BaseInfo = $this->baseInfoRepository->get();
+            if ($BaseInfo->getAuthenticationKey()) {
+                // プラグインのrequireを復元する.
+                $this->execRequirePlugins();
+            }
 
             // スキーマアップデートを実行.
             $this->runCommand([
