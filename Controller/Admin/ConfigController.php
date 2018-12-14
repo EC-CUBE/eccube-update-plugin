@@ -287,7 +287,8 @@ class ConfigController extends AbstractController
         $Plugins = [];
         try {
             $Plugins = $qb->select('p')
-                ->where('p.source IS NOT NULL')
+                ->andWhere('p.source IS NOT NULL')
+                ->andWhere("p.source <> '0'")
                 ->orderBy('p.code', 'ASC')
                 ->getQuery()
                 ->getResult();
