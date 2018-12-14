@@ -1,0 +1,34 @@
+{% extends '@admin/default_frame.twig' %}
+
+{% set menus = ['store', 'plugin', 'plugin_list'] %}
+
+{% block title %}EC-CUBEのアップデート（データ更新）{% endblock %}
+{% block sub_title %}{% endblock %}
+
+{% block stylesheet %}{% endblock stylesheet %}
+
+{% block javascript %}{% endblock javascript %}
+
+{% block main %}
+    <div class="c-contentsArea__cols">
+        <div class="c-contentsArea__primaryCol">
+            <div class="c-primaryCol">
+                <form method="post" action="{{ url('eccube_updater400to401_admin_update_data') }}">
+                    {{ form_widget(form._token) }}
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <span>データの更新を実行します。</span>
+                        </div>
+                    </div>
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-body">
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-ec-conversion">データの更新を実行</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
