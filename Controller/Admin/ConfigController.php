@@ -93,6 +93,7 @@ class ConfigController extends AbstractController
 
     /**
      * ConfigController constructor.
+     *
      * @param EccubeConfig $eccubeConfig
      * @param BaseInfoRepository $baseInfoRepository
      * @param PluginRepository $pluginRepository
@@ -128,8 +129,6 @@ class ConfigController extends AbstractController
      */
     public function index(Request $request)
     {
-        $form = $this->createForm(FormType::class);
-
         if (!$this->supported) {
             $this->addError('このプラグインは4.0.0〜4.0.1へのアップデートプラグインです。', 'admin');
         }
@@ -140,7 +139,6 @@ class ConfigController extends AbstractController
         }
 
         return [
-            'form' => $form->createView(),
             'supported' => $this->supported,
         ];
     }
