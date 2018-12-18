@@ -138,8 +138,14 @@ class ConfigController extends AbstractController
             $this->addError('xdebugが有効になっています。無効にしてください。', 'admin');
         }
 
+        $DisablePlugins = $this->pluginRepository->findBy(['enabled' => false]);
+        if ($DisablePlugins) {
+            $this->supported = false;
+        }
+
         return [
             'supported' => $this->supported,
+            'DisablePlugins' => $DisablePlugins,
         ];
     }
 
@@ -287,6 +293,8 @@ class ConfigController extends AbstractController
         $fs = new Filesystem();
         $fs->mirror($this->extractDir, $this->projectDir);
 
+        $this->addSuccess('ファイルの更新が完了しました。引き続き、データの更新を行ってください。', 'admin');
+
         $cacheUtil->clearCache();
 
         return $this->redirectToRoute('eccube_updater400to401_admin_update_data');
@@ -353,6 +361,8 @@ class ConfigController extends AbstractController
      */
     public function complete()
     {
+        $this->addSuccess('バージョンアップが完了しました。', 'admin');
+
         return [];
     }
 
