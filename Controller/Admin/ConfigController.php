@@ -158,6 +158,9 @@ class ConfigController extends AbstractController
 
         foreach ($Plugins as $Plugin) {
             $packageNames[] = 'ec-cube/'.$Plugin->getCode().':'.$Plugin->getVersion();
+            if ($Plugin->getCode() === 'EccubeUpdater400to401') {
+                continue;
+            }
             $data = $this->pluginApiService->getPlugin($Plugin->getCode());
             if (!in_array('4.0.1', $data['supported_versions'])) {
                 $unSupportedPlugins[] = $Plugin;
@@ -233,23 +236,42 @@ class ConfigController extends AbstractController
         );
 
         $changes = [];
-        $overwriteComposerJson = false;
         foreach ($fileHash as $file => $hash) {
             $filePath = $this->eccubeConfig->get('kernel.project_dir').'/'.$file;
             if (file_exists($filePath)) {
                 $hash = hash_file('md5', $filePath);
                 if ($fileHash[$file] != $hash && $fileHashCrlf[$file] != $hash) {
                     $changes[] = $file;
-                    if ($file === 'composer.json' || $file === 'composer.lock') {
-                        $overwriteComposerJson = true;
-                    }
                 }
+            }
+        }
+
+        $current = \json_decode(file_get_contents($this->projectDir.'/composer.json'), true);
+        $origin = \json_decode(file_get_contents(
+            $this->eccubeConfig->get('plugin_realdir').'/EccubeUpdater400to401'.'/Resource/file_hash/composer.json'
+        ), true);
+
+        $overwriteRequires = [];
+        foreach (array_keys($current['require']) as $currentRequire) {
+            if (\strpos($currentRequire, 'eccube') === 0) {
+                continue;
+            }
+            $match = false;
+            foreach (array_keys($origin['require']) as $originRequire) {
+                if ($currentRequire === $originRequire) {
+                    $match = true;
+                    break;
+                }
+            }
+
+            if (!$match) {
+                $overwriteRequires[] = $currentRequire;
             }
         }
 
         return [
             'changes' => $changes,
-            'overwriteComposerJson' => $overwriteComposerJson,
+            'overwriteRequires' => $overwriteRequires,
         ];
     }
 
