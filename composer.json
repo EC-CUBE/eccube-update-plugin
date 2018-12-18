@@ -1,6 +1,6 @@
 {
   "name": "ec-cube/EccubeUpdater400to401",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "eccube-update-plugin",
   "type": "eccube-plugin",
   "require": {
