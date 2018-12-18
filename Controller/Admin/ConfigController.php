@@ -18,10 +18,12 @@ use Doctrine\ORM\NoResultException;
 use Eccube\Common\Constant;
 use Eccube\Common\EccubeConfig;
 use Eccube\Controller\AbstractController;
+use Eccube\Entity\Plugin;
 use Eccube\Exception\PluginException;
 use Eccube\Repository\BaseInfoRepository;
 use Eccube\Repository\PluginRepository;
 use Eccube\Service\Composer\ComposerApiService;
+use Eccube\Service\PluginApiService;
 use Eccube\Util\CacheUtil;
 use Eccube\Util\StringUtil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -91,10 +93,10 @@ class ConfigController extends AbstractController
 
     /**
      * ConfigController constructor.
-     *
      * @param EccubeConfig $eccubeConfig
      * @param BaseInfoRepository $baseInfoRepository
      * @param PluginRepository $pluginRepository
+     * @param PluginApiService $pluginApiService
      * @param ComposerApiService $composerApiService
      * @param KernelInterface $kernel
      */
@@ -102,12 +104,14 @@ class ConfigController extends AbstractController
         EccubeConfig $eccubeConfig,
         BaseInfoRepository $baseInfoRepository,
         PluginRepository $pluginRepository,
+        PluginApiService $pluginApiService,
         ComposerApiService $composerApiService,
         KernelInterface $kernel
     ) {
         $this->kernel = $kernel;
         $this->baseInfoRepository = $baseInfoRepository;
         $this->pluginRepository = $pluginRepository;
+        $this->pluginApiService = $pluginApiService;
         $this->composerApiService = $composerApiService;
         $this->eccubeConfig = $eccubeConfig;
         $this->supported = version_compare(Constant::VERSION, '4.0.0', '=');
@@ -142,6 +146,32 @@ class ConfigController extends AbstractController
     }
 
     /**
+     * プラグインのEC-CUBE対応バージョンのチェックを行う.
+     *
+     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/check_plugin_version", name="eccube_updater400to401_admin_check_plugin_version")
+     * @Template("@EccubeUpdater400to401/admin/check_plugin_vesrion.twig")
+     */
+    public function checkPluginVersion(Request $request)
+    {
+        $this->isTokenValid();
+
+        $Plugins = $this->getPlugins();
+        $unSupportedPlugins = [];
+
+        foreach ($Plugins as $Plugin) {
+            $packageNames[] = 'ec-cube/'.$Plugin->getCode().':'.$Plugin->getVersion();
+            $data = $this->pluginApiService->getPlugin($Plugin->getCode());
+            if (!in_array('4.0.1', $data['supported_versions'])) {
+                $unSupportedPlugins[] = $Plugin;
+            }
+        }
+
+        return [
+            'unSupportedPlugins' => $unSupportedPlugins,
+        ];
+    }
+
+    /**
      * ファイルの書き込み権限チェックを行う.
      *
      * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/check_permission", name="eccube_updater400to401_admin_check_permission", methods={"POST"})
@@ -149,11 +179,7 @@ class ConfigController extends AbstractController
      */
     public function checkPermission(Request $request)
     {
-        $form = $this->createForm(FormType::class);
-        $form->handleRequest($request);
-        if (!($form->isSubmitted() && $form->isValid())) {
-            return $this->redirectToRoute('eccube_updater400to401_admin_config');
-        }
+        $this->isTokenValid();
 
         $phar = new \PharData($this->updateFile);
         $phar->extractTo($this->varDir, null, true);
@@ -187,7 +213,6 @@ class ConfigController extends AbstractController
         }
 
         return [
-            'form' => $form->createView(),
             'noWritePermissions' => $noWritePermissions,
         ];
     }
@@ -200,11 +225,7 @@ class ConfigController extends AbstractController
      */
     public function checkSource(Request $request)
     {
-        $form = $this->createForm(FormType::class);
-        $form->handleRequest($request);
-        if (!($form->isSubmitted() && $form->isValid())) {
-            return $this->redirectToRoute('eccube_updater400to401_admin_config');
-        }
+        $this->isTokenValid();
 
         $fileHash = Yaml::parseFile(
             $this->eccubeConfig->get('plugin_realdir').'/EccubeUpdater400to401'.'/Resource/file_hash/file_hash.yaml'
@@ -214,19 +235,23 @@ class ConfigController extends AbstractController
         );
 
         $changes = [];
+        $overwriteComposerJson = false;
         foreach ($fileHash as $file => $hash) {
             $filePath = $this->eccubeConfig->get('kernel.project_dir').'/'.$file;
             if (file_exists($filePath)) {
                 $hash = hash_file('md5', $filePath);
                 if ($fileHash[$file] != $hash && $fileHashCrlf[$file] != $hash) {
                     $changes[] = $file;
+                    if ($file === 'composer.json' || $file === 'composer.lock') {
+                        $overwriteComposerJson = true;
+                    }
                 }
             }
         }
 
         return [
-            'form' => $form->createView(),
             'changes' => $changes,
+            'overwriteComposerJson' => $overwriteComposerJson,
         ];
     }
 
@@ -315,17 +340,8 @@ class ConfigController extends AbstractController
     {
         $packageNames = [];
 
-        $qb = $this->pluginRepository->createQueryBuilder('p');
-        $Plugins = [];
-        try {
-            $Plugins = $qb->select('p')
-                ->where("p.source IS NOT NULL AND p.source <> '0' AND p.source <> ''")
-                ->orderBy('p.code', 'ASC')
-                ->getQuery()
-                ->getResult();
-        } catch (NoResultException | NonUniqueResultException $e) {
-            log_error($e->getMessage());
-        }
+        $Plugins = $this->getPlugins();
+
         foreach ($Plugins as $Plugin) {
             $packageNames[] = 'ec-cube/'.$Plugin->getCode().':'.$Plugin->getVersion();
         }
@@ -378,5 +394,26 @@ class ConfigController extends AbstractController
         $console->run($input, $output);
 
         return $output;
+    }
+
+    /**
+     * @return Plugin[]
+     */
+    protected function getPlugins()
+    {
+        $qb = $this->pluginRepository->createQueryBuilder('p');
+
+        $Plugins = [];
+        try {
+            $Plugins = $qb->select('p')
+                ->where("p.source IS NOT NULL AND p.source <> '0' AND p.source <> ''")
+                ->orderBy('p.code', 'ASC')
+                ->getQuery()
+                ->getResult();
+        } catch (NoResultException | NonUniqueResultException $e) {
+            log_error($e->getMessage());
+        }
+
+        return $Plugins;
     }
 }

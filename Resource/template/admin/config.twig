@@ -15,50 +15,54 @@
     <div class="c-contentsArea__cols">
         <div class="c-contentsArea__primaryCol">
             <div class="c-primaryCol">
-                <form name="form" method="post" action="{{ url('eccube_updater400to401_admin_check_permission') }}">
-                    {{ form_widget(form._token) }}
-                    <div class="card rounded border-0 mb-4">
-                        <div class="card-header"><span>アップデートの注意点</span></div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col mb-2">
-                                    <ul>
-                                        <li>・この手順では、ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
-                                        <li>・本番環境でバージョンアップを行う前に、必ずテスト環境で事前検証を行ってください。</li>
-                                        <li>・本番環境でバージョンアップを行う前に、必ずファイルのバックアップを行ってください</li>
-                                    </ul>
-                                </div>
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header"><span>アップデートの注意点</span></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col mb-2">
+                                <ul>
+                                    <li>・この手順では、ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
+                                    <li>・本番環境でバージョンアップを行う前に、必ずテスト環境で事前検証を行ってください。</li>
+                                    <li>・本番環境でバージョンアップを行う前に、必ずファイルのバックアップを行ってください</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="card rounded border-0 mb-4">
-                        <div class="card-header"><span>リリースノート</span></div>
-                        <div class="card-body">
-                            <h6>主な変更点</h6>
-                            <ul>
-                                <li>・メンテナンス機能を追加しました。</li>
-                                <li>・セキュリティの強化対応をおこないました。</li>
-                                <li>・プラグインのマイグレーション機構を追加しました</li>
-                            </ul>
-                            <br>
-                            <h6>その他多数の修正を行っています。詳しくは以下をご覧ください。</h6>
-                            <ul>
-                                <li>・<a target="_blank" rel="noreferrer" href="https://github.com/EC-CUBE/ec-cube/releases/tag/4.0.1">EC-CUBE 4.0.1</a></li>
-                                <li>・<a target="_blank" rel="noreferrer" href="https://www.ec-cube.net/news/detail.php?news_id=311">EC-CUBE 4.0.1 をリリースしました</a></li>
-                            </ul>
+                </div>
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header"><span>リリースノート</span></div>
+                    <div class="card-body">
+                        <h6>主な変更点</h6>
+                        <ul>
+                            <li>・メンテナンス機能を追加しました。</li>
+                            <li>・セキュリティの強化対応をおこないました。</li>
+                            <li>・プラグインのマイグレーション機構を追加しました</li>
+                        </ul>
+                        <br>
+                        <h6>その他多数の修正を行っています。詳しくは以下をご覧ください。</h6>
+                        <ul>
+                            <li>・<a target="_blank" rel="noreferrer"
+                                    href="https://github.com/EC-CUBE/ec-cube/releases/tag/4.0.1">EC-CUBE 4.0.1</a></li>
+                            <li>・<a target="_blank" rel="noreferrer"
+                                    href="https://www.ec-cube.net/news/detail.php?news_id=311">EC-CUBE 4.0.1
+                                    をリリースしました</a></li>
+                        </ul>
 
-                        </div>
                     </div>
-                    {% if supported %}
-                        <div class="card rounded border-0 mb-4">
-                            <div class="card-body">
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-ec-conversion">書き込み権限の確認</button>
-                                </div>
+                </div>
+                {% if supported %}
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-body">
+                            <div class="text-center">
+                                <a class="btn btn-ec-conversion"
+                                   href="{{ url('eccube_updater400to401_admin_check_plugin_version') }}" {{ csrf_token_for_anchor() }}
+                                   data-method="post" data-confirm="false">
+                                    プラグインの対応状況の確認へ
+                                </a>
                             </div>
                         </div>
-                    {% endif %}
-                </form>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -20,7 +20,7 @@
                         </div>
                     {% else %}
                         <div class="card-header">
-                            <span>以下の{{ changes|length }}ファイルが変更されています.</span>
+                            <span>以下の{{ changes|length }}ファイルが変更されています</span>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -45,6 +45,20 @@
                         </div>
                     {% endif %}
                 </div>
+                {% if overwriteComposerJson %}
+                    <div class="card rounded border-0 mb-4">
+                        <div class="card-header">
+                            <span>composer.json/composer.lockが上書きされます</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col mb-2">
+                                    独自にライブラリを導入している場合は、アップデート後、手動でcomposer requireを行ってください。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="card rounded border-0 mb-4">
                     <div class="card-body">
                         <div class="text-center">

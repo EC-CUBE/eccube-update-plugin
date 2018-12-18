@@ -2,7 +2,7 @@
 
 {% set menus = ['store', 'plugin', 'plugin_list'] %}
 
-{% block title %}EC-CUBEのアップデート（書き込み権限の確認）{% endblock %}
+{% block title %}EC-CUBEのアップデート（プラグインの対応状況の確認）{% endblock %}
 {% block sub_title %}{% endblock %}
 
 {% block stylesheet %}{% endblock stylesheet %}
@@ -10,26 +10,26 @@
 {% block javascript %}{% endblock javascript %}
 
 {% block main %}
-    {% set is_ok = noWritePermissions|length <= 0 %}
+    {% set is_ok = unSupportedPlugins|length <= 0 %}
     <div class="c-contentsArea__cols">
         <div class="c-contentsArea__primaryCol">
             <div class="c-primaryCol">
                 <div class="card rounded border-0 mb-4">
                     {% if is_ok %}
                         <div class="card-header">
-                            <span>書き込み権限は正常です。</span>
+                            <span>インストール済のプラグインはEC-CUBE4.0.1に対応しています</span>
                         </div>
                     {% else %}
                         <div class="card-header">
-                            <span>以下の{{ noWritePermissions|length }}ファイルおよびディレクトリに書き込み権限を与えてください。</span>
+                            <span>以下の{{ unSupportedPlugins|length }}プラグインはEC-CUBE4.0.1に対応していません。プラグインが動作しない可能性があります。</span>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col mb-2">
                                     <div class="alert alert-danger border border-danger">
                                         <ul>
-                                            {% for file in noWritePermissions %}
-                                                <li>{{ file }}</li>
+                                            {% for Plugin in unSupportedPlugins %}
+                                                <li>{{ Plugin.name }}</li>
                                             {% endfor %}
                                         </ul>
                                     </div>
@@ -41,19 +41,13 @@
                 <div class="card rounded border-0 mb-4">
                     <div class="card-body">
                         <div class="text-center">
-                            {% if is_ok %}
-                                <a class="btn btn-ec-conversion"
-                                   href="{{ url('eccube_updater400to401_admin_check_source') }}" {{ csrf_token_for_anchor() }}
-                                   data-method="post" data-confirm="false">
-                                    ファイルの更新確認へ
-                                </a>
-                            {% else %}
-                                <a class="btn btn-ec-conversion"
-                                   href="{{ url('eccube_updater400to401_admin_check_permission') }}" {{ csrf_token_for_anchor() }}
-                                   data-method="post" data-confirm="false">
-                                    更新
-                                </a>
-                            {% endif %}
+                            <a class="btn btn-ec-regular"
+                               href="{{ path('eccube_updater400to401_admin_config') }}">中止</a>
+                            <a class="btn btn-ec-conversion"
+                               href="{{ url('eccube_updater400to401_admin_check_permission') }}" {{ csrf_token_for_anchor() }}
+                               data-method="post" data-confirm="false">
+                                書き込み権限の確認へ
+                            </a>
                         </div>
                     </div>
                 </div>
