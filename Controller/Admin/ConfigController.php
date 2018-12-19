@@ -259,7 +259,7 @@ class ConfigController extends AbstractController
 
         $overwriteRequires = [];
         foreach (array_keys($current['require']) as $currentRequire) {
-            if (\strpos($currentRequire, 'eccube') === 0) {
+            if (\strpos($currentRequire, 'ec-cube') === 0) {
                 continue;
             }
             $match = false;
