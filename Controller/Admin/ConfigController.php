@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater400to401\Controller\Admin;
+namespace Plugin\EccubeUpdater401to402\Controller\Admin;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -25,7 +25,7 @@ use Eccube\Repository\PluginRepository;
 use Eccube\Service\Composer\ComposerApiService;
 use Eccube\Service\PluginApiService;
 use Eccube\Util\CacheUtil;
-use Eccube\Util\StringUtil;
+use Plugin\EccubeUpdater401to402\Common\Constant as UpdaterConstant;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -74,12 +74,7 @@ class ConfigController extends AbstractController
     /**
      * @var string
      */
-    protected $varDir;
-
-    /**
-     * @var string
-     */
-    protected $extractDir;
+    protected $dataDir;
 
     /**
      * @var string
@@ -115,22 +110,22 @@ class ConfigController extends AbstractController
         $this->pluginApiService = $pluginApiService;
         $this->composerApiService = $composerApiService;
         $this->eccubeConfig = $eccubeConfig;
-        $this->supported = version_compare(Constant::VERSION, '4.0.0', '=');
+        $this->supported = version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=');
         $this->projectDir = realpath($eccubeConfig->get('kernel.project_dir'));
-        $this->varDir = realpath($this->projectDir.'/var');
-        @mkdir($this->varDir.'/4.0.0...4.0.1');
-        $this->extractDir = realpath($this->varDir.'/4.0.0...4.0.1');
-        $this->updateFile = realpath(__DIR__.'/../../Resource/update_file/4.0.0...4.0.1.tar.gz');
+        $this->dataDir = $this->projectDir.'/app/PluginData/eccube_update_plugin';
+        $this->updateFile = realpath(__DIR__.'/../../Resource/update_file.tar.gz');
     }
 
     /**
-     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/config", name="eccube_updater400to401_admin_config")
-     * @Template("@EccubeUpdater400to401/admin/config.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/config", name="eccube_updater401to402_admin_config")
+     * @Template("@EccubeUpdater401to402/admin/config.twig")
      */
     public function index(Request $request)
     {
         if (!$this->supported) {
-            $this->addError('このプラグインは4.0.0〜4.0.1へのアップデートプラグインです。', 'admin');
+            $message = sprintf('このプラグインは%s〜%sへのアップデートプラグインです。', UpdaterConstant::FROM_VERSION,
+                UpdaterConstant::TO_VERSION);
+            $this->addError($message, 'admin');
         }
 
         if (function_exists('xdebug_is_enabled()') && xdebug_is_enabled()) {
@@ -152,8 +147,8 @@ class ConfigController extends AbstractController
     /**
      * プラグインのEC-CUBE対応バージョンのチェックを行う.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/check_plugin_version", name="eccube_updater400to401_admin_check_plugin_version")
-     * @Template("@EccubeUpdater400to401/admin/check_plugin_vesrion.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/check_plugin_version", name="eccube_updater401to402_admin_check_plugin_version")
+     * @Template("@EccubeUpdater401to402/admin/check_plugin_vesrion.twig")
      */
     public function checkPluginVersion(Request $request)
     {
@@ -164,11 +159,11 @@ class ConfigController extends AbstractController
 
         foreach ($Plugins as $Plugin) {
             $packageNames[] = 'ec-cube/'.$Plugin->getCode().':'.$Plugin->getVersion();
-            if ($Plugin->getCode() === 'EccubeUpdater400to401') {
+            if ($Plugin->getCode() === UpdaterConstant::PLUGIN_CODE) {
                 continue;
             }
             $data = $this->pluginApiService->getPlugin($Plugin->getCode());
-            if (!in_array('4.0.1', $data['supported_versions'])) {
+            if (!in_array(UpdaterConstant::TO_VERSION, $data['supported_versions'])) {
                 $unSupportedPlugins[] = $Plugin;
             }
         }
@@ -181,26 +176,33 @@ class ConfigController extends AbstractController
     /**
      * ファイルの書き込み権限チェックを行う.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/check_permission", name="eccube_updater400to401_admin_check_permission", methods={"POST"})
-     * @Template("@EccubeUpdater400to401/admin/check_permission.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/check_permission", name="eccube_updater401to402_admin_check_permission", methods={"POST"})
+     * @Template("@EccubeUpdater401to402/admin/check_permission.twig")
      */
-    public function checkPermission(Request $request)
+    public function checkPermission(Request $request, Filesystem $fs)
     {
         $this->isTokenValid();
 
+        if (file_exists($this->dataDir)) {
+            $fs->remove($this->dataDir);
+        }
+
+        $fs->mkdir($this->dataDir);
+        $this->dataDir = realpath($this->dataDir);
+
         $phar = new \PharData($this->updateFile);
-        $phar->extractTo($this->varDir, null, true);
+        $phar->extractTo($this->dataDir, null, true);
 
         $noWritePermissions = [];
 
         // ディレクトリの書き込み権限をチェック
         $dirs = Finder::create()
-            ->in($this->extractDir)
+            ->in($this->dataDir)
             ->directories();
 
         /** @var \SplFileInfo $dir */
         foreach ($dirs as $dir) {
-            $path = $this->projectDir.str_replace($this->extractDir, '', $dir->getRealPath());
+            $path = $this->projectDir.str_replace($this->dataDir, '', $dir->getRealPath());
             if (file_exists($path) && !is_writable($path)) {
                 $noWritePermissions[] = $path;
             }
@@ -208,12 +210,12 @@ class ConfigController extends AbstractController
 
         // ファイルの書き込み権限をチェック
         $files = Finder::create()
-            ->in($this->extractDir)
+            ->in($this->dataDir)
             ->files();
 
         /** @var \SplFileInfo $file */
         foreach ($files as $file) {
-            $path = $this->projectDir.str_replace($this->extractDir, '', $file->getRealPath());
+            $path = $this->projectDir.str_replace($this->dataDir, '', $file->getRealPath());
             if (file_exists($path) && !is_writable($path)) {
                 $noWritePermissions[] = $path;
             }
@@ -227,18 +229,18 @@ class ConfigController extends AbstractController
     /**
      * 更新ファイルの競合を確認する.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/check_source", name="eccube_updater400to401_admin_check_source", methods={"POST"})
-     * @Template("@EccubeUpdater400to401/admin/check_source.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/check_source", name="eccube_updater401to402_admin_check_source", methods={"POST"})
+     * @Template("@EccubeUpdater401to402/admin/check_source.twig")
      */
     public function checkSource(Request $request)
     {
         $this->isTokenValid();
 
         $fileHash = Yaml::parseFile(
-            $this->eccubeConfig->get('plugin_realdir').'/EccubeUpdater400to401'.'/Resource/file_hash/file_hash.yaml'
+            $this->eccubeConfig->get('plugin_realdir').'/'.UpdaterConstant::PLUGIN_CODE.'/Resource/file_hash/file_hash.yaml'
         );
         $fileHashCrlf = Yaml::parseFile(
-            $this->eccubeConfig->get('plugin_realdir').'/EccubeUpdater400to401'.'/Resource/file_hash/file_hash_crlf.yaml'
+            $this->eccubeConfig->get('plugin_realdir').'/'.UpdaterConstant::PLUGIN_CODE.'/Resource/file_hash/file_hash_crlf.yaml'
         );
 
         $changes = [];
@@ -254,7 +256,7 @@ class ConfigController extends AbstractController
 
         $current = \json_decode(file_get_contents($this->projectDir.'/composer.json'), true);
         $origin = \json_decode(file_get_contents(
-            $this->eccubeConfig->get('plugin_realdir').'/EccubeUpdater400to401'.'/Resource/file_hash/composer.json'
+            $this->eccubeConfig->get('plugin_realdir').'/'.UpdaterConstant::PLUGIN_CODE.'/Resource/file_hash/composer.json'
         ), true);
 
         $overwriteRequires = [];
@@ -284,20 +286,20 @@ class ConfigController extends AbstractController
     /**
      * ファイルを上書きする.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/update_files", name="eccube_updater400to401_admin_update_files", methods={"POST"})
+     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/update_files", name="eccube_updater401to402_admin_update_files", methods={"POST"})
      */
     public function updateFiles(Request $request, CacheUtil $cacheUtil)
     {
         $this->isTokenValid();
 
         $fs = new Filesystem();
-        $fs->mirror($this->extractDir, $this->projectDir);
+        $fs->mirror($this->dataDir, $this->projectDir);
 
         $this->addSuccess('ファイルの更新が完了しました。引き続き、データの更新を行ってください。', 'admin');
 
         $cacheUtil->clearCache();
 
-        return $this->redirectToRoute('eccube_updater400to401_admin_update_data');
+        return $this->redirectToRoute('eccube_updater401to402_admin_update_data');
     }
 
     /**
@@ -310,8 +312,8 @@ class ConfigController extends AbstractController
      * - スキーマアップデート
      * - マイグレーション
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/update_data", name="eccube_updater400to401_admin_update_data")
-     * @Template("@EccubeUpdater400to401/admin/update_data.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/update_data", name="eccube_updater401to402_admin_update_data")
+     * @Template("@EccubeUpdater401to402/admin/update_data.twig")
      */
     public function updateData(Request $request, CacheUtil $cacheUtil)
     {
@@ -321,31 +323,32 @@ class ConfigController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // .envファイルを更新.
-            $this->execUpdateDotEnv();
-
             $BaseInfo = $this->baseInfoRepository->get();
             if ($BaseInfo->getAuthenticationKey()) {
                 // プラグインのrequireを復元する.
                 $this->execRequirePlugins();
             }
 
-            // スキーマアップデートを実行.
-            $this->runCommand([
-                'command' => 'doctrine:schema:update',
-                '--dump-sql' => true,
-                '--force' => true,
-            ]);
+            // ファビコンファイルのコピー
+            $this->copyFavicon();
 
-            // マイグレーションを実行.
-            $this->runCommand([
-                'command' => 'doctrine:migrations:migrate',
-                '--no-interaction' => true,
-            ]);
+            // 4.0.1 -> 4.0.2はスキーマアップデートおよびマイグレーションは不要
+//            // スキーマアップデートを実行.
+//            $this->runCommand([
+//                'command' => 'doctrine:schema:update',
+//                '--dump-sql' => true,
+//                '--force' => true,
+//            ]);
+
+//            // マイグレーションを実行.
+//            $this->runCommand([
+//                'command' => 'doctrine:migrations:migrate',
+//                '--no-interaction' => true,
+//            ]);
 
             $cacheUtil->clearCache();
 
-            return $this->redirectToRoute('eccube_updater400to401_admin_complete');
+            return $this->redirectToRoute('eccube_updater401to402_admin_complete');
         }
 
         return [
@@ -356,8 +359,8 @@ class ConfigController extends AbstractController
     /**
      * 完了画面を表示.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_400_to_401/complete", name="eccube_updater400to401_admin_complete")
-     * @Template("@EccubeUpdater400to401/admin/complete.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/complete", name="eccube_updater401to402_admin_complete")
+     * @Template("@EccubeUpdater401to402/admin/complete.twig")
      */
     public function complete()
     {
@@ -383,27 +386,6 @@ class ConfigController extends AbstractController
                 log_error($e->getMessage());
             }
         }
-    }
-
-    /**
-     * .envファイルを更新する.
-     *
-     * @see http://doc4.ec-cube.net/quickstart_update#400---401
-     */
-    protected function execUpdateDotEnv()
-    {
-        $envFile = $this->projectDir.'/.env';
-        $envContent = file_get_contents($envFile);
-        $envContent = StringUtil::replaceOrAddEnv(
-            $envContent,
-            [
-                'ECCUBE_LOCALE' => $this->eccubeConfig->get('locale'),
-                'ECCUBE_ADMIN_ROUTE' => $this->eccubeConfig->get('eccube_admin_route'),
-                'ECCUBE_TEMPLATE_CODE' => $this->eccubeConfig->get('eccube_theme_code'),
-            ]
-        );
-
-        file_put_contents($envFile, $envContent);
     }
 
     /**
@@ -445,5 +427,21 @@ class ConfigController extends AbstractController
         }
 
         return $Plugins;
+    }
+
+    /**
+     * ファビコンファイルをuser_data配下にコピー
+     * https://github.com/EC-CUBE/ec-cube/pull/4075
+     */
+    protected function copyFavicon()
+    {
+        $faviconPath = '/assets/img/common/favicon.ico';
+        if (!file_exists($this->getParameter('eccube_html_dir').'/user_data'.$faviconPath)) {
+            $file = new Filesystem();
+            $file->copy(
+                $this->getParameter('eccube_html_front_dir').$faviconPath,
+                $this->getParameter('eccube_html_dir').'/user_data'.$faviconPath
+            );
+        }
     }
 }
