@@ -24,32 +24,12 @@
                                     <li>・この手順では、ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
                                     <li>・本番環境でバージョンアップを行う前に、必ずテスト環境で事前検証を行ってください。</li>
                                     <li>・本番環境でバージョンアップを行う前に、必ずファイルおよびデータベースのバックアップを行ってください。</li>
-                                    <li>・アップデート実行中にショップ画面へのアクセスが発生すると、アップデートに失敗する可能性があります。</li>
+                                    <li>・アップデート実行中にショップ画面へのアクセスが発生すると、アップデートに失敗する可能性があるため、<a href="{{ url('admin_content_maintenance') }}">メンテンスモード</a>の利用をおすすめします。</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% if DisablePlugins|length > 0 %}
-                <div class="card rounded border-0 mb-4">
-                    <div class="card-header">
-                        <span>以下のプラグインが無効状態になっています。<a href="{{ url('admin_store_plugin') }}">プラグイン一覧</a>から有効化してください。</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col mb-2">
-                                <div class="alert alert-danger border border-danger">
-                                    <ul>
-                                        {% for Plugin in DisablePlugins %}
-                                            <li>{{ Plugin.name }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
                 <div class="card rounded border-0 mb-4">
                     <div class="card-header"><span>リリースノート</span></div>
                     <div class="card-body">

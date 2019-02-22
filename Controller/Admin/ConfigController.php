@@ -132,15 +132,8 @@ class ConfigController extends AbstractController
             $this->supported = false;
             $this->addError('xdebugが有効になっています。無効にしてください。', 'admin');
         }
-
-        $DisablePlugins = $this->pluginRepository->findBy(['enabled' => false]);
-        if ($DisablePlugins) {
-            $this->supported = false;
-        }
-
         return [
             'supported' => $this->supported,
-            'DisablePlugins' => $DisablePlugins,
         ];
     }
 
