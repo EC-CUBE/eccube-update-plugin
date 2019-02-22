@@ -179,12 +179,11 @@ class ConfigController extends AbstractController
      * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/check_permission", name="eccube_updater401to402_admin_check_permission", methods={"POST"})
      * @Template("@EccubeUpdater401to402/admin/check_permission.twig")
      */
-    public function checkPermission(Request $request)
+    public function checkPermission(Request $request, Filesystem $fs)
     {
         $this->isTokenValid();
 
         if (file_exists($this->dataDir)) {
-            $fs = new Filesystem();
             $fs->remove($this->dataDir);
         }
 

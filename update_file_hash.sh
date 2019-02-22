@@ -13,7 +13,7 @@ fi
 echo '' > ${BASE_DIR}/Resource/file_hash/file_hash.yaml
 echo '' > ${BASE_DIR}/Resource/file_hash/file_hash_crlf.yaml
 mkdir -p ${WORK_DIR}/ec-cube
-mkdir -p ${WORK_DIR}/${FROM}...${TO}
+mkdir -p ${WORK_DIR}/update_file
 
 cd ${WORK_DIR}/ec-cube
 curl http://downloads.ec-cube.net/src/eccube-${FROM}.tar.gz | tar xz --strip-components 1
@@ -29,13 +29,14 @@ while read file
 do
     if [ -f $file ]
     then
-        gcp --parents $file ${WORK_DIR}/${FROM}...${TO}
+        gcp --parents $file ${WORK_DIR}/update_file
     fi
 done < ${WORK_DIR}/update_files.txt
 
-tar cvzf ${WORK_DIR}/${FROM}...${TO}.tar.gz ${WORK_DIR}/${FROM}...${TO}
-cp -f ${WORK_DIR}/${FROM}...${TO}.tar.gz ${BASE_DIR}/Resource/
+cd ${WORK_DIR}/update_file
+tar cvzf ${BASE_DIR}/Resource/update_file.tar.gz ./*
 
+cd ${WORK_DIR}/ec-cube
 git reset --hard HEAD
 
 # composer.jsonのコピー
