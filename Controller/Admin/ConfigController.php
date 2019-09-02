@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater401to402\Controller\Admin;
+namespace Plugin\EccubeUpdater402to403\Controller\Admin;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -25,7 +25,7 @@ use Eccube\Repository\PluginRepository;
 use Eccube\Service\Composer\ComposerApiService;
 use Eccube\Service\PluginApiService;
 use Eccube\Util\CacheUtil;
-use Plugin\EccubeUpdater401to402\Common\Constant as UpdaterConstant;
+use Plugin\EccubeUpdater402to403\Common\Constant as UpdaterConstant;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -117,8 +117,8 @@ class ConfigController extends AbstractController
     }
 
     /**
-     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/config", name="eccube_updater401to402_admin_config")
-     * @Template("@EccubeUpdater401to402/admin/config.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/config", name="eccube_updater402to403_admin_config")
+     * @Template("@EccubeUpdater402to403/admin/config.twig")
      */
     public function index(Request $request)
     {
@@ -140,8 +140,8 @@ class ConfigController extends AbstractController
     /**
      * プラグインのEC-CUBE対応バージョンのチェックを行う.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/check_plugin_version", name="eccube_updater401to402_admin_check_plugin_version")
-     * @Template("@EccubeUpdater401to402/admin/check_plugin_vesrion.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/check_plugin_version", name="eccube_updater402to403_admin_check_plugin_version")
+     * @Template("@EccubeUpdater402to403/admin/check_plugin_vesrion.twig")
      */
     public function checkPluginVersion(Request $request)
     {
@@ -169,8 +169,8 @@ class ConfigController extends AbstractController
     /**
      * ファイルの書き込み権限チェックを行う.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/check_permission", name="eccube_updater401to402_admin_check_permission", methods={"POST"})
-     * @Template("@EccubeUpdater401to402/admin/check_permission.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/check_permission", name="eccube_updater402to403_admin_check_permission", methods={"POST"})
+     * @Template("@EccubeUpdater402to403/admin/check_permission.twig")
      */
     public function checkPermission(Request $request, Filesystem $fs)
     {
@@ -222,8 +222,8 @@ class ConfigController extends AbstractController
     /**
      * 更新ファイルの競合を確認する.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/check_source", name="eccube_updater401to402_admin_check_source", methods={"POST"})
-     * @Template("@EccubeUpdater401to402/admin/check_source.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/check_source", name="eccube_updater402to403_admin_check_source", methods={"POST"})
+     * @Template("@EccubeUpdater402to403/admin/check_source.twig")
      */
     public function checkSource(Request $request)
     {
@@ -279,7 +279,7 @@ class ConfigController extends AbstractController
     /**
      * ファイルを上書きする.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/update_files", name="eccube_updater401to402_admin_update_files", methods={"POST"})
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/update_files", name="eccube_updater402to403_admin_update_files", methods={"POST"})
      */
     public function updateFiles(Request $request, CacheUtil $cacheUtil)
     {
@@ -292,7 +292,7 @@ class ConfigController extends AbstractController
 
         $cacheUtil->clearCache();
 
-        return $this->redirectToRoute('eccube_updater401to402_admin_update_data');
+        return $this->redirectToRoute('eccube_updater402to403_admin_update_data');
     }
 
     /**
@@ -305,8 +305,8 @@ class ConfigController extends AbstractController
      * - スキーマアップデート
      * - マイグレーション
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/update_data", name="eccube_updater401to402_admin_update_data")
-     * @Template("@EccubeUpdater401to402/admin/update_data.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/update_data", name="eccube_updater402to403_admin_update_data")
+     * @Template("@EccubeUpdater402to403/admin/update_data.twig")
      */
     public function updateData(Request $request, CacheUtil $cacheUtil)
     {
@@ -322,26 +322,22 @@ class ConfigController extends AbstractController
                 $this->execRequirePlugins();
             }
 
-            // ファビコンファイルのコピー
-            $this->copyFavicon();
+            // スキーマアップデートを実行.
+            $this->runCommand([
+                'command' => 'doctrine:schema:update',
+                '--dump-sql' => true,
+                '--force' => true,
+            ]);
 
-            // 4.0.1 -> 4.0.2はスキーマアップデートおよびマイグレーションは不要
-//            // スキーマアップデートを実行.
-//            $this->runCommand([
-//                'command' => 'doctrine:schema:update',
-//                '--dump-sql' => true,
-//                '--force' => true,
-//            ]);
-
-//            // マイグレーションを実行.
-//            $this->runCommand([
-//                'command' => 'doctrine:migrations:migrate',
-//                '--no-interaction' => true,
-//            ]);
+            // マイグレーションを実行.
+            $this->runCommand([
+                'command' => 'doctrine:migrations:migrate',
+                '--no-interaction' => true,
+            ]);
 
             $cacheUtil->clearCache();
 
-            return $this->redirectToRoute('eccube_updater401to402_admin_complete');
+            return $this->redirectToRoute('eccube_updater402to403_admin_complete');
         }
 
         return [
@@ -352,8 +348,8 @@ class ConfigController extends AbstractController
     /**
      * 完了画面を表示.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_401_to_402/complete", name="eccube_updater401to402_admin_complete")
-     * @Template("@EccubeUpdater401to402/admin/complete.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/complete", name="eccube_updater402to403_admin_complete")
+     * @Template("@EccubeUpdater402to403/admin/complete.twig")
      */
     public function complete()
     {
@@ -420,21 +416,5 @@ class ConfigController extends AbstractController
         }
 
         return $Plugins;
-    }
-
-    /**
-     * ファビコンファイルをuser_data配下にコピー
-     * https://github.com/EC-CUBE/ec-cube/pull/4075
-     */
-    protected function copyFavicon()
-    {
-        $faviconPath = '/assets/img/common/favicon.ico';
-        if (!file_exists($this->getParameter('eccube_html_dir').'/user_data'.$faviconPath)) {
-            $file = new Filesystem();
-            $file->copy(
-                $this->getParameter('eccube_html_front_dir').$faviconPath,
-                $this->getParameter('eccube_html_dir').'/user_data'.$faviconPath
-            );
-        }
     }
 }

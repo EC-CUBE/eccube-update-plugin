@@ -1,12 +1,12 @@
 {
-  "name": "ec-cube/EccubeUpdater401to402",
-  "version": "1.0.1",
+  "name": "ec-cube/EccubeUpdater402to403",
+  "version": "1.0.0",
   "description": "EC-CUBEアップデートプラグイン",
   "type": "eccube-plugin",
   "require": {
     "ec-cube/plugin-installer": "~0.0.6"
   },
   "extra": {
-    "code": "EccubeUpdater401to402"
+    "code": "EccubeUpdater402to403"
   }
 }
