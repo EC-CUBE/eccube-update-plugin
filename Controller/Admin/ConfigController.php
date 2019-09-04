@@ -35,6 +35,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Yaml;
@@ -289,6 +290,64 @@ class ConfigController extends AbstractController
         $fs->mirror($this->dataDir, $this->projectDir);
 
         $this->addSuccess('ファイルの更新が完了しました。引き続き、データの更新を行ってください。', 'admin');
+
+        // https://github.com/EC-CUBE/ec-cube/pull/4117
+        // 上記の修正により, プロキシファイルの再生成が必要になる.
+        // 1プロセスで完結できない処理のため, ルーティングを分割しながら順次実行する.
+        $dir = $this->getParameter('kernel.project_dir').'/app/proxy/entity';
+        $finder = new Finder();
+        $finder->in($dir)
+            ->name('*.php');
+
+        foreach ($finder->files() as $file) {
+            unlink($file->getRealPath());
+        }
+
+        $this->session->set('update_plugin.clear_proxy_ok', true);
+
+        $cacheUtil->clearCache();
+
+        return $this->redirectToRoute('eccube_updater402to403_admin_dump_autoload');
+    }
+
+    /**
+     * @see https://github.com/EC-CUBE/ec-cube/pull/4117
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/dump_autoload", name="eccube_updater402to403_admin_dump_autoload")
+     */
+    public function dumpAutoload(CacheUtil $cacheUtil)
+    {
+        if (!$this->session->get('update_plugin.clear_proxy_ok', false)) {
+            throw new BadRequestHttpException();
+        }
+
+        $this->session->remove('update_plugin.clear_proxy_ok');
+
+        $this->composerApiService->runCommand([
+            'command' => 'dump-autoload',
+        ]);
+
+        $this->session->set('update_plugin.dump_autoload_ok', true);
+
+        $cacheUtil->clearCache();
+
+        return $this->redirectToRoute('eccube_updater402to403_admin_gen_proxy');
+    }
+
+    /**
+     * @see https://github.com/EC-CUBE/ec-cube/pull/4117
+     * @Route("/%eccube_admin_route%/eccube_updater_402_to_403/gen_proxy", name="eccube_updater402to403_admin_gen_proxy")
+     */
+    public function generateProxy(CacheUtil $cacheUtil)
+    {
+        if (!$this->session->get('update_plugin.dump_autoload_ok', false)) {
+            throw new BadRequestHttpException();
+        }
+
+        $this->session->remove('update_plugin.dump_autoload_ok');
+
+        $this->runCommand([
+            'command' => 'eccube:generate:proxies',
+        ]);
 
         $cacheUtil->clearCache();
 
