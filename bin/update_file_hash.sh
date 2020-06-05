@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BASE_DIR=$(pwd)
 WORK_DIR=${BASE_DIR}/work
-FROM=4.0.2
-TO=4.0.3
+FROM=4.0.3
+TO=4.0.4
 
 if [ -d ${WORK_DIR} ]
 then
