@@ -17,11 +17,11 @@
                 <div class="card rounded border-0 mb-4">
                     {% if is_ok %}
                         <div class="card-header">
-                            <span>インストール済のプラグインはEC-CUBE{{ constant('Plugin\\EccubeUpdater402to403\\Common\\Constant::TO_VERSION') }}に対応しています</span>
+                            <span>インストール済のプラグインはEC-CUBE{{ constant('Plugin\\EccubeUpdater403to404\\Common\\Constant::TO_VERSION') }}に対応しています</span>
                         </div>
                     {% else %}
                         <div class="card-header">
-                            <span>以下の{{ unSupportedPlugins|length }}プラグインはEC-CUBE{{ constant('Plugin\\EccubeUpdater402to403\\Common\\Constant::TO_VERSION') }}に対応していません。プラグインが動作しない可能性があります。</span>
+                            <span>以下の{{ unSupportedPlugins|length }}プラグインはEC-CUBE{{ constant('Plugin\\EccubeUpdater403to404\\Common\\Constant::TO_VERSION') }}に対応していません。プラグインが動作しない可能性があります。</span>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -42,9 +42,9 @@
                     <div class="card-body">
                         <div class="text-center">
                             <a class="btn btn-ec-regular"
-                               href="{{ path('eccube_updater402to403_admin_config') }}">中止</a>
+                               href="{{ path('eccube_updater403to404_admin_config') }}">中止</a>
                             <a class="btn btn-ec-conversion"
-                               href="{{ url('eccube_updater402to403_admin_check_permission') }}" {{ csrf_token_for_anchor() }}
+                               href="{{ url('eccube_updater403to404_admin_check_permission') }}" {{ csrf_token_for_anchor() }}
                                data-method="post" data-confirm="false">
                                 書き込み権限の確認へ
                             </a>
