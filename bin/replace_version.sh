@@ -14,7 +14,7 @@ CURRENT_TO=$((NEXT_VERSION - 1))
 CURRENT_FROM_STR=${CURRENT_FROM:0:1}.${CURRENT_FROM:1:1}.${CURRENT_FROM:2:2}
 CURRENT_TO_STR=${CURRENT_TO:0:1}.${CURRENT_TO:1:1}.${CURRENT_TO:2:2}
 
-files=` find . -type f -name '*.php' -or -name '*.twig'`
+files=`find . -type f -name '*.php' -or -name '*.twig'`
 
 for file in $files; do
     sed -i '' "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" $file
@@ -23,3 +23,5 @@ for file in $files; do
     sed -i '' "s/${CURRENT_TO_STR}/${NEXT_TO_STR}/g" $file
     sed -i '' "s/${CURRENT_FROM_STR}/${NEXT_FROM_STR}/g" $file
 done
+
+sed -i '' "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
