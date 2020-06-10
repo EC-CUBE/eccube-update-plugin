@@ -88,6 +88,18 @@ class ConfigController extends AbstractController
     protected $updateFile;
 
     /**
+     * 4.0.4のSamesite対応により、ファイル上書き後にログインセッションが切れてしまうため、完了時点でコピーするようにする.
+     *
+     * @var string[]
+     */
+    protected $samesiteFiles = [
+        'app/config/eccube/packages/framework.yaml',
+        'app/config/eccube/services.yaml',
+        'src/Eccube/Session/Storage/Handler/SameSiteNoneCompatSessionHandler.php',
+        'src/Eccube/DependencyInjection/EccubeExtension.php',
+    ];
+
+    /**
      * ConfigController constructor.
      *
      * @param EccubeConfig $eccubeConfig
@@ -287,6 +299,13 @@ class ConfigController extends AbstractController
         $this->isTokenValid();
 
         $fs = new Filesystem();
+
+        // 4.0.4 samesite対応のファイルは完了時点でコピー
+        foreach ($this->samesiteFiles as $file) {
+            $fs->rename($this->dataDir.'/'.$file, $this->dataDir.'/'.$file.'.tmp');
+        }
+        // 4.0.4 samesite対応のファイルは完了時点でコピー
+
         $fs->mirror($this->dataDir, $this->projectDir);
 
         $this->addSuccess('ファイルの更新が完了しました。引き続き、データの更新を行ってください。', 'admin');
@@ -410,8 +429,16 @@ class ConfigController extends AbstractController
      * @Route("/%eccube_admin_route%/eccube_updater_403_to_404/complete", name="eccube_updater403to404_admin_complete")
      * @Template("@EccubeUpdater403to404/admin/complete.twig")
      */
-    public function complete()
+    public function complete(CacheUtil $cacheUtil)
     {
+        // 4.0.4 samesite対応のファイルは完了時点でコピー
+        $fs = new Filesystem();
+        foreach ($this->samesiteFiles as $file) {
+            $fs->rename($this->projectDir.'/'.$file.'.tmp', $this->projectDir.'/'.$file);
+        }
+        $cacheUtil->clearCache();
+        // 4.0.4 samesite対応のファイルは完了時点でコピー
+
         $this->addSuccess('バージョンアップが完了しました。', 'admin');
 
         return [];
