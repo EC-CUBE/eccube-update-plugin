@@ -434,6 +434,9 @@ class ConfigController extends AbstractController
         // 4.0.4 samesite対応のファイルは完了時点でコピー
         $fs = new Filesystem();
         foreach ($this->samesiteFiles as $file) {
+            if (file_exists($this->projectDir.'/'.$file)) {
+                $fs->remove($this->projectDir.'/'.$file);
+            }
             $fs->rename($this->projectDir.'/'.$file.'.tmp', $this->projectDir.'/'.$file);
         }
         $cacheUtil->clearCache();
