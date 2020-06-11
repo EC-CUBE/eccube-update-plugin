@@ -5,6 +5,8 @@ WORK_DIR=${BASE_DIR}/work
 FROM=4.0.3
 TO=4.0.4-rc
 
+# 差分チェックの対象外ファイルの一覧
+# ここで指定したファイルは, プラグインの差分チェック時の対象外になります
 SKIP_FILES=(
 composer.json
 composer.lock
@@ -16,6 +18,7 @@ vendor/composer/autoload_namespaces.php
 vendor/composer/autoload_psr4.php
 vendor/composer/autoload_real.php
 vendor/composer/autoload_static.php
+vendor/composer/installed.json
 )
 
 if [ -d ${WORK_DIR} ]

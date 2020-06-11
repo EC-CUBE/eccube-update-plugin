@@ -218,7 +218,6 @@ vendor/composer/composer/src/Composer/Util/Perforce.php: 1df4eb0985975809f40e28c
 vendor/composer/composer/src/Composer/Util/ProcessExecutor.php: 7e781d0f32a31592cbe7b834f0113e3c
 vendor/composer/composer/src/Composer/Util/RemoteFilesystem.php: c204528eebba3842631f724f419015ea
 vendor/composer/composer/src/Composer/Util/TlsHelper.php: 9676bffae13f7c5b82086276c0d23727
-vendor/composer/installed.json: 4bdf03379934254e6e3b4d6d39079e6c
 vendor/composer/spdx-licenses/CHANGELOG.md: 9a9fbe2f9d3105a840506a2ffd052a42
 vendor/composer/spdx-licenses/res/spdx-exceptions.json: 79774ed9cb8967005240014e00f83669
 vendor/composer/spdx-licenses/res/spdx-licenses.json: ba4ebb0534836017114780b778c3dd89
