@@ -442,6 +442,10 @@ class ConfigController extends AbstractController
         $cacheUtil->clearCache();
         // 4.0.4 samesite対応のファイルは完了時点でコピー
 
+        if (file_exists($this->dataDir)) {
+            $fs->remove($this->dataDir);
+        }
+
         $this->addSuccess('バージョンアップが完了しました。', 'admin');
 
         return [];
