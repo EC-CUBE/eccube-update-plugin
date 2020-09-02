@@ -88,18 +88,6 @@ class ConfigController extends AbstractController
     protected $updateFile;
 
     /**
-     * 4.0.5のSamesite対応により、ファイル上書き後にログインセッションが切れてしまうため、完了時点でコピーするようにする.
-     *
-     * @var string[]
-     */
-    protected $samesiteFiles = [
-        'app/config/eccube/packages/framework.yaml',
-        'app/config/eccube/services.yaml',
-        'src/Eccube/Session/Storage/Handler/SameSiteNoneCompatSessionHandler.php',
-        'src/Eccube/DependencyInjection/EccubeExtension.php',
-    ];
-
-    /**
      * ConfigController constructor.
      *
      * @param EccubeConfig $eccubeConfig
@@ -300,12 +288,6 @@ class ConfigController extends AbstractController
 
         $fs = new Filesystem();
 
-        // 4.0.5 samesite対応のファイルは完了時点でコピー
-        foreach ($this->samesiteFiles as $file) {
-            $fs->rename($this->dataDir.'/'.$file, $this->dataDir.'/'.$file.'.tmp');
-        }
-        // 4.0.5 samesite対応のファイルは完了時点でコピー
-
         $fs->mirror($this->dataDir, $this->projectDir);
 
         $this->addSuccess('ファイルの更新が完了しました。引き続き、データの更新を行ってください。', 'admin');
@@ -429,19 +411,9 @@ class ConfigController extends AbstractController
      * @Route("/%eccube_admin_route%/eccube_updater_404_to_405/complete", name="eccube_updater404to405_admin_complete")
      * @Template("@EccubeUpdater404to405/admin/complete.twig")
      */
-    public function complete(CacheUtil $cacheUtil)
+    public function complete()
     {
-        // 4.0.5 samesite対応のファイルは完了時点でコピー
         $fs = new Filesystem();
-        foreach ($this->samesiteFiles as $file) {
-            if (file_exists($this->projectDir.'/'.$file)) {
-                $fs->remove($this->projectDir.'/'.$file);
-            }
-            $fs->rename($this->projectDir.'/'.$file.'.tmp', $this->projectDir.'/'.$file);
-        }
-        $cacheUtil->clearCache();
-        // 4.0.5 samesite対応のファイルは完了時点でコピー
-
         if (file_exists($this->dataDir)) {
             $fs->remove($this->dataDir);
         }
