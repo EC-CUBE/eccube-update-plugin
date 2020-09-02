@@ -11,11 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater403to404\Common;
+namespace Plugin\EccubeUpdater404to405\Common;
 
 class Constant
 {
-    const FROM_VERSION = '4.0.3';
-    const TO_VERSION = '4.0.4';
-    const PLUGIN_CODE = 'EccubeUpdater403to404';
+    const FROM_VERSION = '4.0.4';
+    const TO_VERSION = '4.0.5';
+    const PLUGIN_CODE = 'EccubeUpdater404to405';
 }
