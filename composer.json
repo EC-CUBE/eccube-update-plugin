@@ -1,6 +1,6 @@
 {
   "name": "ec-cube/EccubeUpdater404to405",
-  "version": "1.0.4",
+  "version": "1.0.0",
   "description": "EC-CUBEアップデートプラグイン",
   "type": "eccube-plugin",
   "require": {
