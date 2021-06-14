@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
+set -x
+
 BASE_DIR=$(pwd)
 WORK_DIR=${BASE_DIR}/work
-FROM=4.0.4
-TO=4.0.5-rc
+FROM=4.0.5
+TO=4.0.6
 
 # 差分チェックの対象外ファイルの一覧
 # ここで指定したファイルは, プラグインの差分チェック時の対象外になります
@@ -32,11 +34,11 @@ mkdir -p ${WORK_DIR}/ec-cube
 mkdir -p ${WORK_DIR}/update_file
 
 cd ${WORK_DIR}/ec-cube
-curl http://downloads.ec-cube.net/src/eccube-${FROM}.tar.gz | tar xz --strip-components 1
+curl https://downloads.ec-cube.net/src/eccube-${FROM}.tar.gz | tar xz --strip-components 1
 git init .
 git add .
 git commit -m 'first commit'
-curl http://downloads.ec-cube.net/src/eccube-${TO}.tar.gz | tar xz --strip-components 1
+curl https://downloads.ec-cube.net/src/eccube-${TO}.tar.gz | tar xz --strip-components 1
 git add .
 git diff --name-only --cached > ${WORK_DIR}/update_files.txt
 
