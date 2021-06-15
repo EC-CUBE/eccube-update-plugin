@@ -52,7 +52,7 @@ do
 done < ${WORK_DIR}/update_files.txt
 
 cd ${WORK_DIR}/update_file
-tar cvzf ${BASE_DIR}/Resource/update_file.tar.gz ./*
+tar cvzf ${BASE_DIR}/Resource/update_file.tar.gz .
 
 cd ${WORK_DIR}/ec-cube
 git reset --hard HEAD
