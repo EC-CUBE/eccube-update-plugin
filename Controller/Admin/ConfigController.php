@@ -111,7 +111,15 @@ class ConfigController extends AbstractController
         $this->pluginApiService = $pluginApiService;
         $this->composerApiService = $composerApiService;
         $this->eccubeConfig = $eccubeConfig;
-        $this->supported = version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=');
+
+        // 4.0.5 もしくは 4.0.5-p1を対象とする
+        if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=')
+            || version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=')) {
+            $this->supported = true;
+        } else {
+            $this->supported = false;
+        }
+
         $this->projectDir = realpath($eccubeConfig->get('kernel.project_dir'));
         $this->dataDir = $this->projectDir.'/app/PluginData/eccube_update_plugin';
         $this->updateFile = realpath(__DIR__.'/../../Resource/update_file.tar.gz');
