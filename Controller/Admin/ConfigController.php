@@ -141,6 +141,16 @@ class ConfigController extends AbstractController
             $this->supported = false;
             $this->addError('xdebugが有効になっています。無効にしてください。', 'admin');
         }
+
+        // 4.0.5-p1の場合は、ハッシュファイル・アップデートファイルを差し替え
+        if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=')) {
+            $fs = new Filesystem();
+            $dir = $this->eccubeConfig->get('plugin_realdir').'/'.UpdaterConstant::PLUGIN_CODE;
+            $fs->copy($dir.'/Resource/file_hash/405p1_file_hash.yaml', $dir.'/Resource/file_hash/file_hash.yaml', true);
+            $fs->copy($dir.'/Resource/file_hash/405p1_file_hash_crlf.yaml', $dir.'/Resource/file_hash/file_hash_crlf.yaml', true);
+            $fs->copy($dir.'/Resource/405p1_update_file.tar.gz', $dir.'/Resource/update_file.tar.gz', true);
+        }
+
         return [
             'supported' => $this->supported,
         ];
