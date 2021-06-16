@@ -71,7 +71,8 @@ rm -f .scrutinizer.yml
 rm -f .coveralls.yml
 rm -f .travis.yml
 
-tar cvzf ${BASE_DIR}/Resource/update_file.tar.gz .
+# .htaccessがアーカイブに含まれないので直接指定
+tar cvzf ${BASE_DIR}/Resource/update_file.tar.gz ./* ./.htaccess
 
 cd ${WORK_DIR}/ec-cube
 git reset --hard HEAD
