@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
+set -x
+
 BASE_DIR=$(pwd)
 WORK_DIR=${BASE_DIR}/work
-FROM=4.0.4
-TO=4.0.5-rc
+FROM=4.0.5
+TO=4.0.6
 
 # 差分チェックの対象外ファイルの一覧
 # ここで指定したファイルは, プラグインの差分チェック時の対象外になります
@@ -32,11 +34,11 @@ mkdir -p ${WORK_DIR}/ec-cube
 mkdir -p ${WORK_DIR}/update_file
 
 cd ${WORK_DIR}/ec-cube
-curl http://downloads.ec-cube.net/src/eccube-${FROM}.tar.gz | tar xz --strip-components 1
+curl https://downloads.ec-cube.net/src/eccube-${FROM}.tar.gz | tar xz --strip-components 1
 git init .
 git add .
 git commit -m 'first commit'
-curl http://downloads.ec-cube.net/src/eccube-${TO}.tar.gz | tar xz --strip-components 1
+curl https://downloads.ec-cube.net/src/eccube-${TO}.tar.gz | tar xz --strip-components 1
 git add .
 git diff --name-only --cached > ${WORK_DIR}/update_files.txt
 
@@ -50,7 +52,27 @@ do
 done < ${WORK_DIR}/update_files.txt
 
 cd ${WORK_DIR}/update_file
-tar cvzf ${BASE_DIR}/Resource/update_file.tar.gz ./*
+
+# APIプラグイン等、外部ライブラリを使用している場合に
+# 外部ライブラリのクラスが認識できなくなるため、autoload関連のファイルを除外
+rm -f vendor/autoload.php
+rm -f vendor/composer/autoload_classmap.php
+rm -f vendor/composer/autoload_files.php
+rm -f vendor/composer/autoload_namespaces.php
+rm -f vendor/composer/autoload_psr4.php
+rm -f vendor/composer/autoload_real.php
+rm -f vendor/composer/autoload_static.php
+rm -f vendor/composer/installed.json
+
+# パッケージ内の不要なファイルを削除
+rm -f codeception.sh
+rm -f appveyor.yml
+rm -f .scrutinizer.yml
+rm -f .coveralls.yml
+rm -f .travis.yml
+
+# .htaccessがアーカイブに含まれないので直接指定
+tar cvzf ${BASE_DIR}/Resource/update_file.tar.gz ./* ./.htaccess
 
 cd ${WORK_DIR}/ec-cube
 git reset --hard HEAD
