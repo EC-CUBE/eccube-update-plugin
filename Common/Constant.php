@@ -16,6 +16,6 @@ namespace Plugin\EccubeUpdater405to406\Common;
 class Constant
 {
     const FROM_VERSION = '4.0.5';
-    const TO_VERSION = '4.0.6';
+    const TO_VERSION = '4.0.6-p1';
     const PLUGIN_CODE = 'EccubeUpdater405to406';
 }
