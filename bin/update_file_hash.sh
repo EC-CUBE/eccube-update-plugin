@@ -4,8 +4,8 @@ set -x
 
 BASE_DIR=$(pwd)
 WORK_DIR=${BASE_DIR}/work
-FROM=4.0.5
-TO=4.0.6-p1
+FROM=4.0.6-p1
+TO=4.1-rc
 
 # 差分チェックの対象外ファイルの一覧
 # ここで指定したファイルは, プラグインの差分チェック時の対象外になります
