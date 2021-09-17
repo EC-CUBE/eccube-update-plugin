@@ -34,11 +34,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ConfigController extends AbstractController
 {
@@ -111,15 +114,7 @@ class ConfigController extends AbstractController
         $this->pluginApiService = $pluginApiService;
         $this->composerApiService = $composerApiService;
         $this->eccubeConfig = $eccubeConfig;
-
-        // 4.0.6, 4.0.6-p1, 4.1.0 を対象とする
-        if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=')
-            || version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=')
-            || version_compare(Constant::VERSION, '4.1.0', '=')) {
-            $this->supported = true;
-        } else {
-            $this->supported = false;
-        }
+        $this->supported = version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=');
 
         $this->projectDir = realpath($eccubeConfig->get('kernel.project_dir'));
         $this->dataDir = $this->projectDir.'/app/PluginData/eccube_update_plugin';
@@ -141,19 +136,6 @@ class ConfigController extends AbstractController
         if (function_exists('xdebug_is_enabled()') && xdebug_is_enabled()) {
             $this->supported = false;
             $this->addError('xdebugが有効になっています。無効にしてください。', 'admin');
-        }
-
-        $fs = new Filesystem();
-        $dir = $this->eccubeConfig->get('plugin_realdir').'/'.UpdaterConstant::PLUGIN_CODE;
-        // 4.0.6-p1の場合は、ハッシュファイル・アップデートファイルを差し替え
-        if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=')) {
-            $fs->copy($dir.'/Resource/file_hash/405p1_file_hash.yaml', $dir.'/Resource/file_hash/file_hash.yaml', true);
-            $fs->copy($dir.'/Resource/file_hash/405p1_file_hash_crlf.yaml', $dir.'/Resource/file_hash/file_hash_crlf.yaml', true);
-            $fs->copy($dir.'/Resource/405p1_update_file.tar.gz', $dir.'/Resource/update_file.tar.gz', true);
-        } elseif (version_compare(Constant::VERSION, '4.1.0', '=')) { // 4.1.0の場合は、ハッシュファイル・アップデートファイルを差し替え
-            $fs->copy($dir.'/Resource/file_hash/406_file_hash.yaml', $dir.'/Resource/file_hash/file_hash.yaml', true);
-            $fs->copy($dir.'/Resource/file_hash/406_file_hash_crlf.yaml', $dir.'/Resource/file_hash/file_hash_crlf.yaml', true);
-            $fs->copy($dir.'/Resource/406_update_file.tar.gz', $dir.'/Resource/update_file.tar.gz', true);
         }
 
         return [
@@ -180,6 +162,7 @@ class ConfigController extends AbstractController
                 continue;
             }
             $data = $this->pluginApiService->getPlugin($Plugin->getCode());
+            dump($data);
             if (!in_array(UpdaterConstant::TO_VERSION, $data['supported_versions'])) {
                 $unSupportedPlugins[] = $Plugin;
             }
@@ -309,123 +292,45 @@ class ConfigController extends AbstractController
     {
         $this->isTokenValid();
 
-        $fs = new Filesystem();
-
-        $fs->mirror($this->dataDir, $this->projectDir);
-
-        $this->addSuccess('ファイルの更新が完了しました。引き続き、データの更新を行ってください。', 'admin');
-
-        // https://github.com/EC-CUBE/ec-cube/pull/4117
-        // 上記の修正により, プロキシファイルの再生成が必要になる.
-        // 1プロセスで完結できない処理のため, ルーティングを分割しながら順次実行する.
-        $dir = $this->getParameter('kernel.project_dir').'/app/proxy/entity';
-        $finder = new Finder();
-        $finder->in($dir)
-            ->name('*.php');
-
-        foreach ($finder->files() as $file) {
-            unlink($file->getRealPath());
-        }
-
-        $this->session->set('update_plugin.clear_proxy_ok', true);
-
-        $cacheUtil->clearCache();
-
-        return $this->redirectToRoute('eccube_updater406to410_admin_dump_autoload');
-    }
-
-    /**
-     * @see https://github.com/EC-CUBE/ec-cube/pull/4117
-     * @Route("/%eccube_admin_route%/eccube_updater_406_to_410/dump_autoload", name="eccube_updater406to410_admin_dump_autoload")
-     */
-    public function dumpAutoload(CacheUtil $cacheUtil)
-    {
-        if (!$this->session->get('update_plugin.clear_proxy_ok', false)) {
-            throw new BadRequestHttpException();
-        }
-
-        $this->session->remove('update_plugin.clear_proxy_ok');
-
-        $this->composerApiService->runCommand([
-            'command' => 'dump-autoload',
-        ]);
-
-        $this->session->set('update_plugin.dump_autoload_ok', true);
-
-        $cacheUtil->clearCache();
-
-        return $this->redirectToRoute('eccube_updater406to410_admin_gen_proxy');
-    }
-
-    /**
-     * @see https://github.com/EC-CUBE/ec-cube/pull/4117
-     * @Route("/%eccube_admin_route%/eccube_updater_406_to_410/gen_proxy", name="eccube_updater406to410_admin_gen_proxy")
-     */
-    public function generateProxy(CacheUtil $cacheUtil)
-    {
-        if (!$this->session->get('update_plugin.dump_autoload_ok', false)) {
-            throw new BadRequestHttpException();
-        }
-
-        $this->session->remove('update_plugin.dump_autoload_ok');
-
-        $this->runCommand([
-            'command' => 'eccube:generate:proxies',
-        ]);
-
-        $cacheUtil->clearCache();
-
-        return $this->redirectToRoute('eccube_updater406to410_admin_update_data');
-    }
-
-    /**
-     * データ更新を行う.
-     *
-     * 以下を実行する.
-     *
-     * - .envファイルの更新
-     * - composer.jsonの更新
-     * - スキーマアップデート
-     * - マイグレーション
-     *
-     * @Route("/%eccube_admin_route%/eccube_updater_406_to_410/update_data", name="eccube_updater406to410_admin_update_data")
-     * @Template("@EccubeUpdater406to410/admin/update_data.twig")
-     */
-    public function updateData(Request $request, CacheUtil $cacheUtil)
-    {
         set_time_limit(0);
 
-        $form = $this->createForm(FormType::class);
-        $form->handleRequest($request);
+        $completeUrl = $this->generateUrl('eccube_updater406to410_admin_complete', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $BaseInfo = $this->baseInfoRepository->get();
-            if ($BaseInfo->getAuthenticationKey()) {
-                // プラグインのrequireを復元する.
-                $this->execRequirePlugins();
-            }
+        $this->clearComposerCache();
+        $this->clearProxies();
+        $this->clearSessions();
+        $this->removeDeletedFiles41();
 
-            // スキーマアップデートを実行.
-            $this->runCommand([
-                'command' => 'doctrine:schema:update',
-                '--dump-sql' => true,
-                '--force' => true,
-            ]);
+        // 更新ファイルで上書き
+        $fs = new Filesystem();
+        $fs->mirror($this->dataDir, $this->projectDir);
 
-            // マイグレーションを実行.
-            $this->runCommand([
-                'command' => 'doctrine:migrations:migrate',
-                '--no-interaction' => true,
-            ]);
+        $phpPath = '/Users/chihiro_adachi/.anyenv/envs/phpenv/shims/php';
 
-            $cacheUtil->clearCache();
+        $commands = [
+            'cache:clear --no-warmup',
+            'cache:warmup --no-optional-warmers',
+            'eccube:update406to401:plugin-already-installed',
+            'eccube:generate:proxies',
+            'doctrine:schema:update --dump-sql -f',
+            'doctrine:migrations:migrate --no-interaction',
+            'eccube:update406to401:update-pre-install-plugins',
+            'cache:clear --no-warmup',
+            'cache:warmup --no-optional-warmers',
+            'eccube:update406to401:dump-autoload',
+        ];
 
-            return $this->redirectToRoute('eccube_updater406to410_admin_complete');
+        foreach ($commands as $command) {
+            \error_log($phpPath.' '.$this->projectDir.'/bin/console '.$command);
+            $process = new Process($phpPath.' '.$this->projectDir.'/bin/console '.$command);
+            $process->setTimeout(600);
+            $process->run();
+            \error_log($process->isSuccessful() ? 'ok' : 'ng');
         }
 
-        return [
-            'form' => $form->createView(),
-        ];
+        // ファイル上書き後, return Responseで遷移できないため直接リダイレクト
+        header('Location: '.$completeUrl);
+        exit;
     }
 
     /**
@@ -434,7 +339,7 @@ class ConfigController extends AbstractController
      * @Route("/%eccube_admin_route%/eccube_updater_406_to_410/complete", name="eccube_updater406to410_admin_complete")
      * @Template("@EccubeUpdater406to410/admin/complete.twig")
      */
-    public function complete()
+    public function complete(CacheUtil $cacheUtil)
     {
         $fs = new Filesystem();
         if (file_exists($this->dataDir)) {
@@ -453,7 +358,7 @@ class ConfigController extends AbstractController
         $Plugins = $this->getPlugins();
 
         foreach ($Plugins as $Plugin) {
-            $packageNames[] = 'ec-cube/'.$Plugin->getCode().':'.$Plugin->getVersion();
+            $packageNames[] = 'ec-cube/'.strtolower($Plugin->getCode()).':'.$Plugin->getVersion();
         }
 
         if ($packageNames) {
@@ -463,26 +368,6 @@ class ConfigController extends AbstractController
                 log_error($e->getMessage());
             }
         }
-    }
-
-    /**
-     * コマンドを実行.
-     */
-    protected function runCommand(array $command)
-    {
-        $console = new Application($this->kernel);
-        $console->setAutoExit(false);
-
-        $input = new ArrayInput($command);
-
-        $output = new BufferedOutput(
-            OutputInterface::VERBOSITY_DEBUG,
-            true
-        );
-
-        $console->run($input, $output);
-
-        return $output;
     }
 
     /**
@@ -504,5 +389,41 @@ class ConfigController extends AbstractController
         }
 
         return $Plugins;
+    }
+
+    private function clearComposerCache()
+    {
+        $fs = new Filesystem();
+        $fs->remove($this->projectDir.'/app/Plugin/.composer');
+    }
+
+    private function clearSessions()
+    {
+        $fs = new Filesystem();
+        $fs->remove($this->projectDir.'/var/sessions');
+    }
+
+    private function clearProxies()
+    {
+        $fs = new Filesystem();
+        $finder = new Finder();
+        $finder->in($this->projectDir.'/app/proxy/entity')
+            ->name('*.php');
+
+        foreach ($finder->files() as $file) {
+            $fs->remove($file->getRealPath());
+        }
+    }
+
+    /**
+     * 4.1で削除されたファイルを削除する
+     */
+    private function removeDeletedFiles41()
+    {
+        $fs = new Filesystem();
+        $fs->remove($this->projectDir.'/src/Eccube/Application.php');
+        $fs->remove($this->projectDir.'/src/Eccube/Doctrine/EventSubscriber/LoadEventSubscriber.php');
+        $fs->remove($this->projectDir.'/src/Eccube/ServiceProvider/EccubeServiceProvider.php');
+        $fs->remove($this->projectDir.'/src/Eccube/ServiceProvider/ServiceProviderInterface.php');
     }
 }
