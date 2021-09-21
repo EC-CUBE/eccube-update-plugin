@@ -46,9 +46,17 @@
                             <li><a target="_blank" rel="noreferrer noopener"
                                     href="https://github.com/EC-CUBE/ec-cube/releases/tag/4.1.0-p1">EC-CUBE 4.1.0-p1</a></li>
                         </ul>
-
                     </div>
                 </div>
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header"><span>phpパス設定</span></div>
+                    <div class="card-body">
+                        <div>
+                            <input type="text" value="{{ php_path }}" disabled="disabled" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
                 {% if supported %}
                     <div class="card rounded border-0 mb-4">
                         <div class="card-body">

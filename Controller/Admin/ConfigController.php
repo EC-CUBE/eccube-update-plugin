@@ -24,6 +24,7 @@ use Eccube\Repository\BaseInfoRepository;
 use Eccube\Repository\PluginRepository;
 use Eccube\Service\Composer\ComposerApiService;
 use Eccube\Service\PluginApiService;
+use Eccube\Service\SystemService;
 use Eccube\Util\CacheUtil;
 use Plugin\EccubeUpdater406to410\Common\Constant as UpdaterConstant;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -38,6 +39,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Process\Process;
@@ -49,11 +51,6 @@ class ConfigController extends AbstractController
      * @var EccubeConfig
      */
     protected $eccubeConfig;
-
-    /**
-     * @var KernelInterface
-     */
-    protected $kernel;
 
     /**
      * @var BaseInfoRepository
@@ -69,6 +66,11 @@ class ConfigController extends AbstractController
      * @var ComposerApiService
      */
     protected $composerApiService;
+
+    /**
+     * @var SystemService
+     */
+    protected $systemService;
 
     /**
      * @var bool
@@ -92,13 +94,6 @@ class ConfigController extends AbstractController
 
     /**
      * ConfigController constructor.
-     *
-     * @param EccubeConfig $eccubeConfig
-     * @param BaseInfoRepository $baseInfoRepository
-     * @param PluginRepository $pluginRepository
-     * @param PluginApiService $pluginApiService
-     * @param ComposerApiService $composerApiService
-     * @param KernelInterface $kernel
      */
     public function __construct(
         EccubeConfig $eccubeConfig,
@@ -106,15 +101,14 @@ class ConfigController extends AbstractController
         PluginRepository $pluginRepository,
         PluginApiService $pluginApiService,
         ComposerApiService $composerApiService,
-        KernelInterface $kernel
+        SystemService $systemService
     ) {
-        $this->kernel = $kernel;
         $this->baseInfoRepository = $baseInfoRepository;
         $this->pluginRepository = $pluginRepository;
         $this->pluginApiService = $pluginApiService;
         $this->composerApiService = $composerApiService;
+        $this->systemService = $systemService;
         $this->eccubeConfig = $eccubeConfig;
-        $this->supported = version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=');
 
         $this->projectDir = realpath($eccubeConfig->get('kernel.project_dir'));
         $this->dataDir = $this->projectDir.'/app/PluginData/eccube_update_plugin';
@@ -127,8 +121,9 @@ class ConfigController extends AbstractController
      */
     public function index(Request $request)
     {
+        $this->supported = version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=');
         if (!$this->supported) {
-            $message = sprintf('このプラグインは%s〜%sへのアップデートプラグインです。', UpdaterConstant::FROM_VERSION,
+            $message = sprintf('このプラグインは%s〜%sへのアップデートプラグインです。', UpdaterConstant::FROM_VERSION.'-p1',
                 UpdaterConstant::TO_VERSION);
             $this->addError($message, 'admin');
         }
@@ -138,8 +133,20 @@ class ConfigController extends AbstractController
             $this->addError('xdebugが有効になっています。無効にしてください。', 'admin');
         }
 
+        if (PHP_VERSION_ID < 70300) {
+            $this->supported = false;
+            $this->addError('EC-CUBE 4.1.0 は PHP 7.3 以上で動作します。', 'admin');
+        }
+
+        $phpPath = $this->getPhpPath();
+        if (!$phpPath) {
+            $this->supported = false;
+            $this->addError('phpの実行パスを取得できませんでした。', 'admin');
+        }
+
         return [
             'supported' => $this->supported,
+            'php_path' => $phpPath
         ];
     }
 
@@ -294,6 +301,8 @@ class ConfigController extends AbstractController
 
         set_time_limit(0);
 
+        $this->systemService->switchMaintenance(true);
+        $phpPath = $this->getPhpPath();
         $completeUrl = $this->generateUrl('eccube_updater406to410_admin_complete', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $this->clearComposerCache();
@@ -304,8 +313,6 @@ class ConfigController extends AbstractController
         // 更新ファイルで上書き
         $fs = new Filesystem();
         $fs->mirror($this->dataDir, $this->projectDir);
-
-        $phpPath = '/Users/chihiro_adachi/.anyenv/envs/phpenv/shims/php';
 
         $commands = [
             'cache:clear --no-warmup',
@@ -320,15 +327,26 @@ class ConfigController extends AbstractController
             'eccube:update406to401:dump-autoload',
         ];
 
+        log_info('Start update commands');
         foreach ($commands as $command) {
-            \error_log($phpPath.' '.$this->projectDir.'/bin/console '.$command);
-            $process = new Process($phpPath.' '.$this->projectDir.'/bin/console '.$command);
+            $commandline = $phpPath.' bin/console '.$command;
+            log_info('Execute '.$commandline);
+            $process = new Process($commandline);
             $process->setTimeout(600);
+            $process->setWorkingDirectory($this->projectDir);
             $process->run();
-            \error_log($process->isSuccessful() ? 'ok' : 'ng');
-        }
 
-        // ファイル上書き後, return Responseで遷移できないため直接リダイレクト
+            if (!$process->isSuccessful()) {
+                $process->getOutput();
+                log_error('Fail '.$commandline);
+                log_error($process->getOutput());
+                break;
+            }
+            log_info('Done '.$commandline);
+        }
+        log_info('End update commands');
+
+        // ファイル上書き後、return Responseでシステムエラーとなるため、直接処理を記述
         header('Location: '.$completeUrl);
         exit;
     }
@@ -348,26 +366,9 @@ class ConfigController extends AbstractController
 
         $this->addSuccess('バージョンアップが完了しました。', 'admin');
 
+        $this->systemService->disableMaintenance();
+
         return [];
-    }
-
-    protected function execRequirePlugins()
-    {
-        $packageNames = [];
-
-        $Plugins = $this->getPlugins();
-
-        foreach ($Plugins as $Plugin) {
-            $packageNames[] = 'ec-cube/'.strtolower($Plugin->getCode()).':'.$Plugin->getVersion();
-        }
-
-        if ($packageNames) {
-            try {
-                $this->composerApiService->execRequire(implode(' ', $packageNames));
-            } catch (PluginException $e) {
-                log_error($e->getMessage());
-            }
-        }
     }
 
     /**
@@ -426,4 +427,28 @@ class ConfigController extends AbstractController
         $fs->remove($this->projectDir.'/src/Eccube/ServiceProvider/EccubeServiceProvider.php');
         $fs->remove($this->projectDir.'/src/Eccube/ServiceProvider/ServiceProviderInterface.php');
     }
+
+    /**
+     * phpの実行パスを返す
+     *
+     * 実行パスはPhpExecutableFinderで自動探索を行います。
+     * PluginDir/Resource/config/services.yamlでeccube_update_plugin_406_410_php_pathを定義した場合、こちらが優先されます。
+     *
+     * @return false|string
+     */
+    private function getPhpPath()
+    {
+        $phpPath = $this->eccubeConfig->get('eccube_update_plugin_406_410_php_path');
+        if ($phpPath && @is_executable($phpPath)) {
+            return $phpPath;
+        }
+        $phpPath = (new PhpExecutableFinder())->find();
+        if ($phpPath !== false) {
+            return $phpPath;
+        }
+
+        return false;
+    }
+
+
 }
