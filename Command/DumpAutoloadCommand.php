@@ -13,18 +13,12 @@
 
 namespace Plugin\EccubeUpdater406to410\Command;
 
-use Doctrine\DBAL\DriverManager;
-use Dotenv\Dotenv;
 use Eccube\Service\Composer\ComposerApiService;
-use Eccube\Util\StringUtil;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
 class DumpAutoloadCommand extends Command
 {

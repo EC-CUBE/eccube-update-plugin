@@ -73,16 +73,16 @@ class UpdatePreInstallPluginsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $packageNames = [
-            "ec-cube/recommend4",
-            "ec-cube/coupon4",
-            "ec-cube/mailmagazine4",
-            "ec-cube/salesreport4",
-            "ec-cube/relatedproduct4",
-            "ec-cube/securitychecker4",
-            "ec-cube/productreview4",
-            "ec-cube/api",
-            "ec-cube/sitekit",
-            "ec-cube/gmc",
+            'ec-cube/recommend4',
+            'ec-cube/coupon4',
+            'ec-cube/mailmagazine4',
+            'ec-cube/salesreport4',
+            'ec-cube/relatedproduct4',
+            'ec-cube/securitychecker4',
+            'ec-cube/productreview4',
+            'ec-cube/api',
+            'ec-cube/sitekit',
+            'ec-cube/gmc',
         ];
 
         $this->composerApiService->execRequire(implode(' ', $packageNames));

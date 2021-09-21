@@ -5,7 +5,7 @@
  *
  * Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
  *
- * https://www.ec-cube.co.jp/
+ * http://www.ec-cube.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,7 +19,6 @@ use Eccube\Common\Constant;
 use Eccube\Common\EccubeConfig;
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Plugin;
-use Eccube\Exception\PluginException;
 use Eccube\Repository\BaseInfoRepository;
 use Eccube\Repository\PluginRepository;
 use Eccube\Service\Composer\ComposerApiService;
@@ -28,22 +27,14 @@ use Eccube\Service\SystemService;
 use Eccube\Util\CacheUtil;
 use Plugin\EccubeUpdater406to410\Common\Constant as UpdaterConstant;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Yaml\Yaml;
 
 class ConfigController extends AbstractController
 {
@@ -146,7 +137,7 @@ class ConfigController extends AbstractController
 
         return [
             'supported' => $this->supported,
-            'php_path' => $phpPath
+            'php_path' => $phpPath,
         ];
     }
 
@@ -449,6 +440,4 @@ class ConfigController extends AbstractController
 
         return false;
     }
-
-
 }
