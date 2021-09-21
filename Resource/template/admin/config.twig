@@ -21,10 +21,9 @@
                         <div class="row">
                             <div class="col mb-2">
                                 <ul>
-                                    <li>・この手順では、ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
-                                    <li>・本番環境でバージョンアップを行う前に、必ずテスト環境で事前検証を行ってください。</li>
-                                    <li>・本番環境でバージョンアップを行う前に、必ずファイルおよびデータベースのバックアップを行ってください。</li>
-                                    <li>・アップデート実行中にショップ画面へのアクセスが発生すると、アップデートに失敗する可能性があるため、<a href="{{ url('admin_content_maintenance') }}">メンテンスモード</a>の利用をおすすめします。</li>
+                                    <li>・この手順では、www.ec-cube.netからダウンロードしたEC-CUBEのパッケージを利用していることを想定しています。</li>
+                                    <li>・本番環境でバージョンアップを行う前に、<strong class="text-danger">必ずテスト環境で事前検証を行ってください。</strong></li>
+                                    <li>・本番環境でバージョンアップを行う前に、<strong class="text-danger">必ずファイルおよびデータベースのバックアップを行ってください。</strong></li>
                                 </ul>
                             </div>
                         </div>
@@ -33,26 +32,26 @@
                 <div class="card rounded border-0 mb-4">
                     <div class="card-header"><span>リリースノート</span></div>
                     <div class="card-body">
-                        <h6>主な変更点</h6>
-                        <ul>
-                            <li>XSS脆弱性の修正(JVN#97554111、JVN#95292458)</li>
-                            <li>Symfonyライブラリのアップデート</li>
-                            <li>プラグインのインストール時にrequire-devのライブラリが含まれていた不具合の修正</li>
-                            <li>JVN#95292458 の修正不備に対応</li>
-                        </ul>
-                        <br>
-                        <h6>リリースノート</h6>
-                        <ul>
-                            <li><a target="_blank" rel="noreferrer noopener"
-                                    href="https://github.com/EC-CUBE/ec-cube/releases/tag/4.1.0-p1">EC-CUBE 4.1.0-p1</a></li>
-                        </ul>
+                        <div class="row">
+                            <div class="col mb-2">
+                                EC-CUBE 4.1.0 の変更点は<a target="_blank" rel="noreferrer noopener"
+                                                      href="https://github.com/EC-CUBE/ec-cube/releases/tag/4.1.0">こちら</a>をご覧ください。
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card rounded border-0 mb-4">
                     <div class="card-header"><span>phpパス設定</span></div>
                     <div class="card-body">
-                        <div>
-                            <input type="text" value="{{ php_path }}" disabled="disabled" class="form-control">
+                        <div class="row">
+                            <div class="col mb-2">
+                                <input type="text" value="{{ php_path }}" disabled="disabled" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-2">
+                                phpの実行パスを確認してください。<br>表示されない場合や変更したい場合は、app/Plugin/EccubeUpdater406to410/Resource/config/services.yamlで実行パスを設定してください。
+                            </div>
                         </div>
                     </div>
                 </div>
