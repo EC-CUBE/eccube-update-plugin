@@ -1,10 +1,10 @@
 {
   "name": "ec-cube/EccubeUpdater406to410",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "EC-CUBEアップデートプラグイン",
   "type": "eccube-plugin",
   "require": {
-    "ec-cube/plugin-installer": "~0.0.6"
+    "ec-cube/plugin-installer": "~0.0.6 || ^2.0"
   },
   "extra": {
     "code": "EccubeUpdater406to410"
