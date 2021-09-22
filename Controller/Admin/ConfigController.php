@@ -300,6 +300,11 @@ class ConfigController extends AbstractController
         $this->clearSessions();
         $this->removeDeletedFiles41();
 
+        while (@ob_end_flush());
+        echo 'アップデートを実行しています...<br>';
+        flush();
+        ob_start();
+
         // 更新ファイルで上書き
         $fs = new Filesystem();
         $fs->mirror($this->dataDir, $this->projectDir);
@@ -319,6 +324,10 @@ class ConfigController extends AbstractController
 
         log_info('Start update commands');
         foreach ($commands as $command) {
+            while (@ob_end_flush());
+            echo $command.'...<br>';
+            flush();
+            ob_start();
             $commandline = $phpPath.' bin/console '.$command;
             log_info('Execute '.$commandline);
             $process = new Process($commandline);
@@ -337,7 +346,13 @@ class ConfigController extends AbstractController
         log_info('End update commands');
 
         // ファイル上書き後、return Responseでシステムエラーとなるため、直接処理を記述
-        header('Location: '.$completeUrl);
+        echo "<html>
+<head>
+<script>
+location.href = '$completeUrl'
+</script>
+</head>
+</html>";
         exit;
     }
 
