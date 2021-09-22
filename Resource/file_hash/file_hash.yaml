@@ -5,9 +5,11 @@ Dockerfile: e4a80cc0328df394e4b985703254f52d
 app/DoctrineMigrations/Version20190821081036.php: eb9f7e0d11c15fe4791007f33d8f102a
 app/DoctrineMigrations/Version20200303053716.php: 12847e068d156784e39cc8d07120131d
 app/config/eccube/bundles.php: a35f8db5689386f761c2047723f9769c
+app/config/eccube/packages/doctrine.yaml: d3b66047073ad0215dfa357fbc092efa
 app/config/eccube/packages/eccube.yaml: 540237679bd16e265254c8cc235e89de
 app/config/eccube/packages/eccube_nav.yaml: 54b6659ae236ef6ac13e28fd9b7d93cd
 app/config/eccube/packages/test/framework.yaml: 86db9fb21c5ec08791bda83898d392ce
+app/config/eccube/packages/twig.yaml: 26ea15c38876f36c7cca95d8bf26a0c9
 app/config/eccube/services.yaml: 02ba6a623b26ea3a7b9f8ab2380b1a10
 app/config/eccube/services_test.yaml: c30dd543b77b0b7ff0697274ce522bb9
 bin/phpunit: 85d90794dcf4f9cb432423855b7547bd
@@ -940,10 +942,6 @@ vendor/doctrine/doctrine-fixtures-bundle/Tests/Fixtures/FooBundle/DataFixtures/W
 vendor/doctrine/doctrine-fixtures-bundle/Tests/IntegrationTest.php: 4cb1aab1de2b09d9a363a1aba0e7430f
 vendor/doctrine/doctrine-fixtures-bundle/composer.json: f5a6e32adbacc2b30282a702c9af09b8
 vendor/doctrine/event-manager/composer.json: a540ddeb3d8a817fb15555095868256b
-vendor/doctrine/inflector/README.md: faf770a2201e95b5b5072073549d1dac
-vendor/doctrine/inflector/composer.json: 756941db3150578b026b372c85dfdd96
-vendor/doctrine/inflector/docs/en/index.rst: 55aa96f41887ebc0d62dd6b5c90582a8
-vendor/doctrine/inflector/lib/Doctrine/Common/Inflector/Inflector.php: c71c2b87e47068e5f0311409c158a885
 vendor/doctrine/instantiator/.doctrine-project.json: 1b6443658e297ead0d5b79d07c709ea1
 vendor/doctrine/instantiator/README.md: 1b81f98913738409c01e22743ea4dfe2
 vendor/doctrine/instantiator/composer.json: e44380f8018cab2b66aac6aa9bcd8d46
