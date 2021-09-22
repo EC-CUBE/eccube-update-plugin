@@ -160,7 +160,6 @@ class ConfigController extends AbstractController
                 continue;
             }
             $data = $this->pluginApiService->getPlugin($Plugin->getCode());
-            dump($data);
             if (!in_array(UpdaterConstant::TO_VERSION, $data['supported_versions'])) {
                 $unSupportedPlugins[] = $Plugin;
             }
