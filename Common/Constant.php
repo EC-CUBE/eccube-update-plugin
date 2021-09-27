@@ -5,17 +5,17 @@
  *
  * Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
  *
- * https://www.ec-cube.co.jp/
+ * http://www.ec-cube.co.jp/
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater405to406\Common;
+namespace Plugin\EccubeUpdater406to410\Common;
 
 class Constant
 {
-    const FROM_VERSION = '4.0.5';
-    const TO_VERSION = '4.0.6-p1';
-    const PLUGIN_CODE = 'EccubeUpdater405to406';
+    const FROM_VERSION = '4.0.6';
+    const TO_VERSION = '4.1.0';
+    const PLUGIN_CODE = 'EccubeUpdater406to410';
 }

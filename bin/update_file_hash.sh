@@ -4,8 +4,8 @@ set -x
 
 BASE_DIR=$(pwd)
 WORK_DIR=${BASE_DIR}/work
-FROM=4.0.5
-TO=4.0.6-p1
+FROM=4.0.6-p1
+TO=4.1.0
 
 # 差分チェックの対象外ファイルの一覧
 # ここで指定したファイルは, プラグインの差分チェック時の対象外になります
@@ -53,18 +53,9 @@ done < ${WORK_DIR}/update_files.txt
 
 cd ${WORK_DIR}/update_file
 
-# APIプラグイン等、外部ライブラリを使用している場合に
-# 外部ライブラリのクラスが認識できなくなるため、autoload関連のファイルを除外
-rm -f vendor/autoload.php
-rm -f vendor/composer/autoload_classmap.php
-rm -f vendor/composer/autoload_files.php
-rm -f vendor/composer/autoload_namespaces.php
-rm -f vendor/composer/autoload_psr4.php
-rm -f vendor/composer/autoload_real.php
-rm -f vendor/composer/autoload_static.php
-rm -f vendor/composer/installed.json
-
 # パッケージ内の不要なファイルを削除
+rm -rf app/Plugin/.composer
+rm -rf app/Plugin/*
 rm -f codeception.sh
 rm -f appveyor.yml
 rm -f .scrutinizer.yml

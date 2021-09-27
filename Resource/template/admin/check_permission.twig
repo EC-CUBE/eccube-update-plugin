@@ -17,7 +17,7 @@
                 <div class="card rounded border-0 mb-4">
                     {% if is_ok %}
                         <div class="card-header">
-                            <span>書き込み権限は正常です。</span>
+                            <span>ファイルの更新が可能です。</span>
                         </div>
                     {% else %}
                         <div class="card-header">
@@ -44,13 +44,13 @@
                         <div class="text-center">
                             {% if is_ok %}
                                 <a class="btn btn-ec-conversion"
-                                   href="{{ url('eccube_updater405to406_admin_check_source') }}" {{ csrf_token_for_anchor() }}
+                                   href="{{ url('eccube_updater406to410_admin_check_source') }}" {{ csrf_token_for_anchor() }}
                                    data-method="post" data-confirm="false">
                                     ファイルの更新確認へ
                                 </a>
                             {% else %}
                                 <a class="btn btn-ec-conversion"
-                                   href="{{ url('eccube_updater405to406_admin_check_permission') }}" {{ csrf_token_for_anchor() }}
+                                   href="{{ url('eccube_updater406to410_admin_check_permission') }}" {{ csrf_token_for_anchor() }}
                                    data-method="post" data-confirm="false">
                                     更新
                                 </a>
