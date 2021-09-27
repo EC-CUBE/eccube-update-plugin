@@ -135,6 +135,18 @@ class ConfigController extends AbstractController
             $this->addError('phpの実行パスを取得できませんでした。', 'admin');
         }
 
+        $Plugin = $this->pluginRepository->findOneBy(['code' => 'AdminSecurity4']);
+        if ($Plugin && $Plugin->isEnabled()) {
+            $this->supported = false;
+            $this->addError($Plugin->getName().'が有効になっています。プラグインを無効化してください。', 'admin');
+        }
+
+        $Plugin = $this->pluginRepository->findOneBy(['code' => 'Taba2FA']);
+        if ($Plugin) {
+            $this->supported = false;
+            $this->addError($Plugin->getName().'がインストールされています。プラグインを削除してください。', 'admin');
+        }
+
         return [
             'supported' => $this->supported,
             'php_path' => $phpPath,
