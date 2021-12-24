@@ -311,6 +311,8 @@ class ConfigController extends AbstractController
         $this->clearProxies();
         $this->clearSessions();
         $this->removeDeletedFiles41();
+        // XXX bin/console cache:clear コマンドが失敗するため、このメソッドで強制的にキャッシュを削除する
+        $this->forceClearCaches();
 
         while (@ob_end_flush());
         echo 'アップデートを実行しています...<br>';
@@ -444,6 +446,16 @@ location.href = '$completeUrl'
         $fs->remove($this->projectDir.'/src/Eccube/ServiceProvider/EccubeServiceProvider.php');
         $fs->remove($this->projectDir.'/src/Eccube/ServiceProvider/ServiceProviderInterface.php');
     }
+
+    /**
+     * bin/console cache:clear コマンドが失敗する場合は、このメソッドで強制的にキャッシュを削除する
+     */
+    private function forceClearCaches()
+    {
+        $fs = new Filesystem();
+        $fs->remove($this->projectDir.'/var/cache/'.env('APP_ENV', 'prod'));
+    }
+
 
     /**
      * phpの実行パスを返す
