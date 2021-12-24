@@ -63,7 +63,7 @@
                     <div class="card-body">
                         <div class="text-center">
                             <a class="btn btn-ec-regular"
-                               href="{{ path('eccube_updater406to410_admin_config') }}">中止</a>
+                               href="{{ path('eccube_updater410to411_admin_config') }}">中止</a>
                             <button type="button" class="btn btn-ec-conversion" data-toggle="modal"
                                     data-target="#copy_files">最新バージョンで上書き
                             </button>
@@ -87,7 +87,7 @@
                                             <button class="btn btn-ec-sub" type="button" data-dismiss="modal">キャンセル
                                             </button>
                                             <a class="btn btn-ec-delete"
-                                               href="{{ url('eccube_updater406to410_admin_update_files') }}" {{ csrf_token_for_anchor() }}
+                                               href="{{ url('eccube_updater410to411_admin_update_files') }}" {{ csrf_token_for_anchor() }}
                                                data-method="post" data-confirm="false">
                                                 最新バージョンで上書き
                                             </a>
