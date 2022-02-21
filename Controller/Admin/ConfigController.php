@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater410to411\Controller\Admin;
+namespace Plugin\EccubeUpdater411to412\Controller\Admin;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -25,7 +25,7 @@ use Eccube\Service\Composer\ComposerApiService;
 use Eccube\Service\PluginApiService;
 use Eccube\Service\SystemService;
 use Eccube\Util\CacheUtil;
-use Plugin\EccubeUpdater410to411\Common\Constant as UpdaterConstant;
+use Plugin\EccubeUpdater411to412\Common\Constant as UpdaterConstant;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -107,8 +107,8 @@ class ConfigController extends AbstractController
     }
 
     /**
-     * @Route("/%eccube_admin_route%/eccube_updater_410_to_411/config", name="eccube_updater410to411_admin_config")
-     * @Template("@EccubeUpdater410to411/admin/config.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_411_to_412/config", name="eccube_updater411to412_admin_config")
+     * @Template("@EccubeUpdater411to412/admin/config.twig")
      */
     public function index(Request $request)
     {
@@ -156,8 +156,8 @@ class ConfigController extends AbstractController
     /**
      * プラグインのEC-CUBE対応バージョンのチェックを行う.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_410_to_411/check_plugin_version", name="eccube_updater410to411_admin_check_plugin_version")
-     * @Template("@EccubeUpdater410to411/admin/check_plugin_vesrion.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_411_to_412/check_plugin_version", name="eccube_updater411to412_admin_check_plugin_version")
+     * @Template("@EccubeUpdater411to412/admin/check_plugin_vesrion.twig")
      */
     public function checkPluginVersion(Request $request)
     {
@@ -185,8 +185,8 @@ class ConfigController extends AbstractController
     /**
      * ファイルの書き込み権限チェックを行う.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_410_to_411/check_permission", name="eccube_updater410to411_admin_check_permission", methods={"POST"})
-     * @Template("@EccubeUpdater410to411/admin/check_permission.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_411_to_412/check_permission", name="eccube_updater411to412_admin_check_permission", methods={"POST"})
+     * @Template("@EccubeUpdater411to412/admin/check_permission.twig")
      */
     public function checkPermission(Request $request, Filesystem $fs)
     {
@@ -238,8 +238,8 @@ class ConfigController extends AbstractController
     /**
      * 更新ファイルの競合を確認する.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_410_to_411/check_source", name="eccube_updater410to411_admin_check_source", methods={"POST"})
-     * @Template("@EccubeUpdater410to411/admin/check_source.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_411_to_412/check_source", name="eccube_updater411to412_admin_check_source", methods={"POST"})
+     * @Template("@EccubeUpdater411to412/admin/check_source.twig")
      */
     public function checkSource(Request $request)
     {
@@ -295,7 +295,7 @@ class ConfigController extends AbstractController
     /**
      * ファイルを上書きする.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_410_to_411/update_files", name="eccube_updater410to411_admin_update_files", methods={"POST"})
+     * @Route("/%eccube_admin_route%/eccube_updater_411_to_412/update_files", name="eccube_updater411to412_admin_update_files", methods={"POST"})
      */
     public function updateFiles(Request $request, CacheUtil $cacheUtil)
     {
@@ -305,7 +305,7 @@ class ConfigController extends AbstractController
 
         $this->systemService->switchMaintenance(true);
         $phpPath = $this->getPhpPath();
-        $completeUrl = $this->generateUrl('eccube_updater410to411_admin_complete', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $completeUrl = $this->generateUrl('eccube_updater411to412_admin_complete', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $this->clearComposerCache();
         $this->clearProxies();
@@ -326,14 +326,14 @@ class ConfigController extends AbstractController
         $commands = [
             'cache:clear --no-warmup',
             'cache:warmup --no-optional-warmers',
-            'eccube:update410to411:plugin-already-installed',
+            'eccube:update411to412:plugin-already-installed',
             'eccube:generate:proxies',
             'doctrine:schema:update --dump-sql -f',
             'doctrine:migrations:migrate --no-interaction',
-            'eccube:update410to411:update-pre-install-plugins',
+            'eccube:update411to412:update-pre-install-plugins',
             'cache:clear --no-warmup',
             'cache:warmup --no-optional-warmers',
-            'eccube:update410to411:dump-autoload',
+            'eccube:update411to412:dump-autoload',
         ];
 
         log_info('Start update commands');
@@ -373,8 +373,8 @@ location.href = '$completeUrl'
     /**
      * 完了画面を表示.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_410_to_411/complete", name="eccube_updater410to411_admin_complete")
-     * @Template("@EccubeUpdater410to411/admin/complete.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_411_to_412/complete", name="eccube_updater411to412_admin_complete")
+     * @Template("@EccubeUpdater411to412/admin/complete.twig")
      */
     public function complete(CacheUtil $cacheUtil)
     {
@@ -461,13 +461,13 @@ location.href = '$completeUrl'
      * phpの実行パスを返す
      *
      * 実行パスはPhpExecutableFinderで自動探索を行います。
-     * PluginDir/Resource/config/services.yamlでeccube_update_plugin_410_411_php_pathを定義した場合、こちらが優先されます。
+     * PluginDir/Resource/config/services.yamlでeccube_update_plugin_411_412_php_pathを定義した場合、こちらが優先されます。
      *
      * @return false|string
      */
     private function getPhpPath()
     {
-        $phpPath = $this->eccubeConfig->get('eccube_update_plugin_410_411_php_path');
+        $phpPath = $this->eccubeConfig->get('eccube_update_plugin_411_412_php_path');
         if ($phpPath && @is_executable($phpPath)) {
             return $phpPath;
         }
