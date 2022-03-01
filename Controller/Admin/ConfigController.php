@@ -330,7 +330,6 @@ class ConfigController extends AbstractController
             'eccube:generate:proxies',
             'doctrine:schema:update --dump-sql -f',
             'doctrine:migrations:migrate --no-interaction',
-            'eccube:update411to412:update-pre-install-plugins',
             'cache:clear --no-warmup',
             'cache:warmup --no-optional-warmers',
             'eccube:update411to412:dump-autoload',
