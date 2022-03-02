@@ -29,7 +29,14 @@
                         <span>アップデートプラグインでは、インストールされているプラグインのアップデートは行われません。<br><a href="{{ url('admin_store_plugin') }}">プラグイン一覧</a>からプラグインのアップデートをご確認ください。</span>
                     </div>
                 </div>
-
+                <div class="card rounded border-0 mb-4">
+                    <div class="card-header">
+                        <span>TRUSTED_HOSTSの設定を行ってください。</span>
+                    </div>
+                    <div class="card-body">
+                        <span><a href="https://www.ec-cube.net/info/weakness/weakness.php?id=83" target="_blank" rel="noreferrer">EC-CUBE 4系における HTTP Hostヘッダの処理に脆弱性 (JVN#53871926)</a>を参考に、<a href="{{ url('admin_setting_system_security') }}">セキュリティ管理</a>から「信頼できるHOST名」の設定を行ってください。</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
