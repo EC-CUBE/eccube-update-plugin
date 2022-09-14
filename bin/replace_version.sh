@@ -84,14 +84,25 @@ echo "PARTIAL_NEXT_VERSION=${PARTIAL_NEXT_VERSION}"
 files=`find . -type f -name '*.php' -or -name '*.twig' -or -name 'services.yaml'`
 
 for file in $files; do
-  echo "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g"
-  sed -i "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" $file
-  sed -i "s/eccube_updater${CURRENT_FROM}to${CURRENT_TO}/eccube_updater${NEXT_FROM}to${NEXT_TO}/g" $file
-  sed -i "s/eccube_updater_${CURRENT_FROM}_to_${CURRENT_TO}/eccube_updater_${NEXT_FROM}_to_${NEXT_TO}/g" $file
-  sed -i "s/${CURRENT_TO_STR}/${NEXT_TO_STR}/g" $file
-  sed -i "s/${CURRENT_FROM_STR}/${NEXT_FROM_STR}/g" $file
-  sed -i "s/:update${CURRENT_FROM}to${CURRENT_TO}/:update${NEXT_FROM}to${NEXT_TO}/g" $file
-  sed -i "s/eccube_update_plugin_${CURRENT_FROM}_${CURRENT_TO}_php_path/eccube_update_plugin_${NEXT_FROM}_${NEXT_TO}_php_path/g" $file
+  # MACOS専用コマンド
+  if [ "$(uname)" == "Darwin" ]; then
+    sed -i '' "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" $file
+    sed -i '' "s/eccube_updater${CURRENT_FROM}to${CURRENT_TO}/eccube_updater${NEXT_FROM}to${NEXT_TO}/g" $file
+    sed -i '' "s/eccube_updater_${CURRENT_FROM}_to_${CURRENT_TO}/eccube_updater_${NEXT_FROM}_to_${NEXT_TO}/g" $file
+    sed -i '' "s/${CURRENT_TO_STR}/${NEXT_TO_STR}/g" $file
+    sed -i '' "s/${CURRENT_FROM_STR}/${NEXT_FROM_STR}/g" $file
+    sed -i '' "s/:update${CURRENT_FROM}to${CURRENT_TO}/:update${NEXT_FROM}to${NEXT_TO}/g" $file
+    sed -i '' "s/eccube_update_plugin_${CURRENT_FROM}_${CURRENT_TO}_php_path/eccube_update_plugin_${NEXT_FROM}_${NEXT_TO}_php_path/g" $file
+  # LINUX専用コマンド
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    sed -i "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" $file
+    sed -i "s/eccube_updater${CURRENT_FROM}to${CURRENT_TO}/eccube_updater${NEXT_FROM}to${NEXT_TO}/g" $file
+    sed -i "s/eccube_updater_${CURRENT_FROM}_to_${CURRENT_TO}/eccube_updater_${NEXT_FROM}_to_${NEXT_TO}/g" $file
+    sed -i "s/${CURRENT_TO_STR}/${NEXT_TO_STR}/g" $file
+    sed -i "s/${CURRENT_FROM_STR}/${NEXT_FROM_STR}/g" $file
+    sed -i "s/:update${CURRENT_FROM}to${CURRENT_TO}/:update${NEXT_FROM}to${NEXT_TO}/g" $file
+    sed -i "s/eccube_update_plugin_${CURRENT_FROM}_${CURRENT_TO}_php_path/eccube_update_plugin_${NEXT_FROM}_${NEXT_TO}_php_path/g" $file
+  fi
 done
 sed -i "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
 sed -i "s/eccubeupdater${CURRENT_FROM}to${CURRENT_TO}/eccubeupdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
