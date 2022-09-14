@@ -16,6 +16,6 @@ namespace Plugin\EccubeUpdater411to412p1\Common;
 class Constant
 {
     const FROM_VERSION = '4.1.1';
-    const TO_VERSION = '4.1.2p1';
+    const TO_VERSION = '4.1.2-p1';
     const PLUGIN_CODE = 'EccubeUpdater411to412p1';
 }
