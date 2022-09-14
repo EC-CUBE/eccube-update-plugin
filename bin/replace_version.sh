@@ -104,5 +104,14 @@ for file in $files; do
     sed -i "s/eccube_update_plugin_${CURRENT_FROM}_${CURRENT_TO}_php_path/eccube_update_plugin_${NEXT_FROM}_${NEXT_TO}_php_path/g" $file
   fi
 done
-sed -i "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
-sed -i "s/eccubeupdater${CURRENT_FROM}to${CURRENT_TO}/eccubeupdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
+
+# MACOS専用コマンド
+if [ "$(uname)" == "Darwin" ]; then
+  sed -i '' "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
+  sed -i '' "s/eccubeupdater${CURRENT_FROM}to${CURRENT_TO}/eccubeupdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
+# LINUX専用コマンド
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  sed -i "s/EccubeUpdater${CURRENT_FROM}to${CURRENT_TO}/EccubeUpdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
+  sed -i "s/eccubeupdater${CURRENT_FROM}to${CURRENT_TO}/eccubeupdater${NEXT_FROM}to${NEXT_TO}/g" composer.json
+fi
+
