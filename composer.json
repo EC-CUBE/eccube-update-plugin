@@ -1,5 +1,5 @@
 {
-  "name": "ec-cube/EccubeUpdater405to406",
+  "name": "ec-cube/EccubeUpdater405to406p2",
   "version": "1.0.2",
   "description": "EC-CUBEアップデートプラグイン",
   "type": "eccube-plugin",
@@ -7,6 +7,6 @@
     "ec-cube/plugin-installer": "~0.0.6"
   },
   "extra": {
-    "code": "EccubeUpdater405to406"
+    "code": "EccubeUpdater405to406p2"
   }
 }
