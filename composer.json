@@ -1,12 +1,12 @@
 {
-  "name": "ec-cube/eccubeupdater411to412p1",
-  "version": "1.0.0",
+  "name": "ec-cube/eccubeupdater411to412",
+  "version": "1.0.1",
   "description": "EC-CUBEアップデートプラグイン",
   "type": "eccube-plugin",
   "require": {
     "ec-cube/plugin-installer": "~0.0.6 || ^2.0"
   },
   "extra": {
-    "code": "EccubeUpdater411to412p1"
+    "code": "EccubeUpdater411to412"
   }
 }

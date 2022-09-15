@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater411to412p1\Command;
+namespace Plugin\EccubeUpdater411to412\Command;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -28,7 +28,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PluginAlreadyInstalledCommand extends Command
 {
-    protected static $defaultName = 'eccube:update411to412p1:plugin-already-installed';
+    protected static $defaultName = 'eccube:update411to412:plugin-already-installed';
 
     /**
      * @var ContainerInterface
