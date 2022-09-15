@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater405to406p2\Controller\Admin;
+namespace Plugin\EccubeUpdater405to406\Controller\Admin;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -25,7 +25,7 @@ use Eccube\Repository\PluginRepository;
 use Eccube\Service\Composer\ComposerApiService;
 use Eccube\Service\PluginApiService;
 use Eccube\Util\CacheUtil;
-use Plugin\EccubeUpdater405to406p2\Common\Constant as UpdaterConstant;
+use Plugin\EccubeUpdater405to406\Common\Constant as UpdaterConstant;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -112,9 +112,10 @@ class ConfigController extends AbstractController
         $this->composerApiService = $composerApiService;
         $this->eccubeConfig = $eccubeConfig;
 
-        // 4.0.5, 4.0.5-p1, 4.0.6 を対象とする
+        // 4.0.5, 4.0.5-p1, 4.0.6, 4.0.6-p1 を対象とする
         if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=')
             || version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=')
+            || version_compare(Constant::VERSION, '4.0.6-p1', '=')
             || version_compare(Constant::VERSION, '4.0.6', '=')) {
             $this->supported = true;
         } else {
@@ -127,8 +128,8 @@ class ConfigController extends AbstractController
     }
 
     /**
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/config", name="eccube_updater405to406p2_admin_config")
-     * @Template("@EccubeUpdater405to406p2/admin/config.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/config", name="eccube_updater405to406_admin_config")
+     * @Template("@EccubeUpdater405to406/admin/config.twig")
      */
     public function index(Request $request)
     {
@@ -164,8 +165,8 @@ class ConfigController extends AbstractController
     /**
      * プラグインのEC-CUBE対応バージョンのチェックを行う.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/check_plugin_version", name="eccube_updater405to406p2_admin_check_plugin_version")
-     * @Template("@EccubeUpdater405to406p2/admin/check_plugin_vesrion.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/check_plugin_version", name="eccube_updater405to406_admin_check_plugin_version")
+     * @Template("@EccubeUpdater405to406/admin/check_plugin_vesrion.twig")
      */
     public function checkPluginVersion(Request $request)
     {
@@ -193,8 +194,8 @@ class ConfigController extends AbstractController
     /**
      * ファイルの書き込み権限チェックを行う.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/check_permission", name="eccube_updater405to406p2_admin_check_permission", methods={"POST"})
-     * @Template("@EccubeUpdater405to406p2/admin/check_permission.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/check_permission", name="eccube_updater405to406_admin_check_permission", methods={"POST"})
+     * @Template("@EccubeUpdater405to406/admin/check_permission.twig")
      */
     public function checkPermission(Request $request, Filesystem $fs)
     {
@@ -246,8 +247,8 @@ class ConfigController extends AbstractController
     /**
      * 更新ファイルの競合を確認する.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/check_source", name="eccube_updater405to406p2_admin_check_source", methods={"POST"})
-     * @Template("@EccubeUpdater405to406p2/admin/check_source.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/check_source", name="eccube_updater405to406_admin_check_source", methods={"POST"})
+     * @Template("@EccubeUpdater405to406/admin/check_source.twig")
      */
     public function checkSource(Request $request)
     {
@@ -303,7 +304,7 @@ class ConfigController extends AbstractController
     /**
      * ファイルを上書きする.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/update_files", name="eccube_updater405to406p2_admin_update_files", methods={"POST"})
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/update_files", name="eccube_updater405to406_admin_update_files", methods={"POST"})
      */
     public function updateFiles(Request $request, CacheUtil $cacheUtil)
     {
@@ -331,12 +332,12 @@ class ConfigController extends AbstractController
 
         $cacheUtil->clearCache();
 
-        return $this->redirectToRoute('eccube_updater405to406p2_admin_dump_autoload');
+        return $this->redirectToRoute('eccube_updater405to406_admin_dump_autoload');
     }
 
     /**
      * @see https://github.com/EC-CUBE/ec-cube/pull/4117
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/dump_autoload", name="eccube_updater405to406p2_admin_dump_autoload")
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/dump_autoload", name="eccube_updater405to406_admin_dump_autoload")
      */
     public function dumpAutoload(CacheUtil $cacheUtil)
     {
@@ -354,12 +355,12 @@ class ConfigController extends AbstractController
 
         $cacheUtil->clearCache();
 
-        return $this->redirectToRoute('eccube_updater405to406p2_admin_gen_proxy');
+        return $this->redirectToRoute('eccube_updater405to406_admin_gen_proxy');
     }
 
     /**
      * @see https://github.com/EC-CUBE/ec-cube/pull/4117
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/gen_proxy", name="eccube_updater405to406p2_admin_gen_proxy")
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/gen_proxy", name="eccube_updater405to406_admin_gen_proxy")
      */
     public function generateProxy(CacheUtil $cacheUtil)
     {
@@ -375,7 +376,7 @@ class ConfigController extends AbstractController
 
         $cacheUtil->clearCache();
 
-        return $this->redirectToRoute('eccube_updater405to406p2_admin_update_data');
+        return $this->redirectToRoute('eccube_updater405to406_admin_update_data');
     }
 
     /**
@@ -388,8 +389,8 @@ class ConfigController extends AbstractController
      * - スキーマアップデート
      * - マイグレーション
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/update_data", name="eccube_updater405to406p2_admin_update_data")
-     * @Template("@EccubeUpdater405to406p2/admin/update_data.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/update_data", name="eccube_updater405to406_admin_update_data")
+     * @Template("@EccubeUpdater405to406/admin/update_data.twig")
      */
     public function updateData(Request $request, CacheUtil $cacheUtil)
     {
@@ -420,7 +421,7 @@ class ConfigController extends AbstractController
 
             $cacheUtil->clearCache();
 
-            return $this->redirectToRoute('eccube_updater405to406p2_admin_complete');
+            return $this->redirectToRoute('eccube_updater405to406_admin_complete');
         }
 
         return [
@@ -431,8 +432,8 @@ class ConfigController extends AbstractController
     /**
      * 完了画面を表示.
      *
-     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406p2/complete", name="eccube_updater405to406p2_admin_complete")
-     * @Template("@EccubeUpdater405to406p2/admin/complete.twig")
+     * @Route("/%eccube_admin_route%/eccube_updater_405_to_406/complete", name="eccube_updater405to406_admin_complete")
+     * @Template("@EccubeUpdater405to406/admin/complete.twig")
      */
     public function complete()
     {

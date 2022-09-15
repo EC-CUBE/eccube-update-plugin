@@ -11,11 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater405to406p2\Common;
+namespace Plugin\EccubeUpdater405to406\Common;
 
 class Constant
 {
     const FROM_VERSION = '4.0.5';
     const TO_VERSION = '4.0.6-p2';
-    const PLUGIN_CODE = 'EccubeUpdater405to406p2';
+    const PLUGIN_CODE = 'EccubeUpdater405to406';
 }
