@@ -112,9 +112,7 @@ class ConfigController extends AbstractController
      */
     public function index(Request $request)
     {
-        $this->supported = version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=') ||
-            version_compare(Constant::VERSION, '4.1.2', '=');
-        ;
+        $this->supported = version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=');
         if (!$this->supported) {
             $message = sprintf('このプラグインは%s〜%sへのアップデートプラグインです。', UpdaterConstant::FROM_VERSION,
                 UpdaterConstant::TO_VERSION);
