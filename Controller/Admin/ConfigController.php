@@ -146,7 +146,6 @@ class ConfigController extends AbstractController
 
         $fs = new Filesystem();
         $dir = $this->eccubeConfig->get('plugin_realdir').'/'.UpdaterConstant::PLUGIN_CODE;
-        $versionString = "";
         
         if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=')) {
             $versionString = '405';
@@ -157,7 +156,7 @@ class ConfigController extends AbstractController
         } elseif (version_compare(Constant::VERSION, '4.0.6-p1', '=')) {
             $versionString = '406p1';
         } else {
-            // constructの内容があるため、ここには来ないけど念のため
+            // バージョンミスがあれば、copy処理をスキップする
             return [
                 'supported' => $this->supported,
             ];
