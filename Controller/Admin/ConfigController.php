@@ -112,9 +112,10 @@ class ConfigController extends AbstractController
         $this->composerApiService = $composerApiService;
         $this->eccubeConfig = $eccubeConfig;
 
-        // 4.0.5, 4.0.5-p1, 4.0.6 を対象とする
+        // 4.0.5, 4.0.5-p1, 4.0.6, 4.0.6-p1 を対象とする
         if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=')
             || version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=')
+            || version_compare(Constant::VERSION, '4.0.6-p1', '=')
             || version_compare(Constant::VERSION, '4.0.6', '=')) {
             $this->supported = true;
         } else {
@@ -145,16 +146,25 @@ class ConfigController extends AbstractController
 
         $fs = new Filesystem();
         $dir = $this->eccubeConfig->get('plugin_realdir').'/'.UpdaterConstant::PLUGIN_CODE;
-        // 4.0.5-p1の場合は、ハッシュファイル・アップデートファイルを差し替え
-        if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=')) {
-            $fs->copy($dir.'/Resource/file_hash/405p1_file_hash.yaml', $dir.'/Resource/file_hash/file_hash.yaml', true);
-            $fs->copy($dir.'/Resource/file_hash/405p1_file_hash_crlf.yaml', $dir.'/Resource/file_hash/file_hash_crlf.yaml', true);
-            $fs->copy($dir.'/Resource/405p1_update_file.tar.gz', $dir.'/Resource/update_file.tar.gz', true);
-        } elseif (version_compare(Constant::VERSION, '4.0.6', '=')) { // 4.0.6の場合は、ハッシュファイル・アップデートファイルを差し替え
-            $fs->copy($dir.'/Resource/file_hash/406_file_hash.yaml', $dir.'/Resource/file_hash/file_hash.yaml', true);
-            $fs->copy($dir.'/Resource/file_hash/406_file_hash_crlf.yaml', $dir.'/Resource/file_hash/file_hash_crlf.yaml', true);
-            $fs->copy($dir.'/Resource/406_update_file.tar.gz', $dir.'/Resource/update_file.tar.gz', true);
+        
+        if (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION, '=')) {
+            $versionString = '405';
+        } elseif (version_compare(Constant::VERSION, UpdaterConstant::FROM_VERSION.'-p1', '=')) {
+            $versionString = '405p1';
+        } elseif (version_compare(Constant::VERSION, '4.0.6', '=')) {
+            $versionString = '406';
+        } elseif (version_compare(Constant::VERSION, '4.0.6-p1', '=')) {
+            $versionString = '406p1';
+        } else {
+            // バージョンミスがあれば、copy処理をスキップする
+            return [
+                'supported' => $this->supported,
+            ];
         }
+
+        $fs->copy($dir."/Resource/file_hash/{$versionString}_file_hash.yaml", $dir.'/Resource/file_hash/file_hash.yaml', true);
+        $fs->copy($dir."/Resource/file_hash/{$versionString}_file_hash_crlf.yaml", $dir.'/Resource/file_hash/file_hash_crlf.yaml', true);
+        $fs->copy($dir."/Resource/{$versionString}_update_file.tar.gz", $dir.'/Resource/update_file.tar.gz', true);
 
         return [
             'supported' => $this->supported,

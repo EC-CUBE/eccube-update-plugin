@@ -5,7 +5,7 @@ set -x
 BASE_DIR=$(pwd)
 WORK_DIR=${BASE_DIR}/work
 FROM=4.0.5
-TO=4.0.6-p1
+TO=4.0.6-p2
 
 # 差分チェックの対象外ファイルの一覧
 # ここで指定したファイルは, プラグインの差分チェック時の対象外になります
@@ -92,9 +92,17 @@ do
 
     if [ -f $file ]
     then
-        md5 $file | sed -e "s/MD5 (//" -e "s/) = /: /" >> ${BASE_DIR}/Resource/file_hash/file_hash.yaml
-        perl -p -i -e 's/\n/\r\n/g' $file
-        md5 $file | sed -e "s/MD5 (//" -e "s/) = /: /" >> ${BASE_DIR}/Resource/file_hash/file_hash_crlf.yaml
+        # MACOS専用コマンド
+        if [ "$(uname)" == "Darwin" ]; then
+           md5 $file | sed -e "s/MD5 (//" -e "s/) = /: /" >> ${BASE_DIR}/Resource/file_hash/file_hash.yaml
+           perl -p -i -e 's/\n/\r\n/g' $file
+           md5 $file | sed -e "s/MD5 (//" -e "s/) = /: /" >> ${BASE_DIR}/Resource/file_hash/file_hash_crlf.yaml
+        # LINUX専用コマンド
+        elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+           md5sum $file | awk '{ print $2":", $1}' >> ${BASE_DIR}/Resource/file_hash/file_hash.yaml
+           perl -p -i -e 's/\n/\r\n/g' $file
+           md5sum $file | awk '{ print $2":", $1}' >> ${BASE_DIR}/Resource/file_hash/file_hash_crlf.yaml
+        fi
     fi
 done < ${WORK_DIR}/update_files.txt
 
