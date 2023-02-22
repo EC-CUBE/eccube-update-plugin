@@ -343,7 +343,7 @@ class ConfigController extends AbstractController
             ob_start();
             $commandline = $phpPath.' bin/console '.$command;
             log_info('Execute '.$commandline);
-            $process = new Process($commandline);
+            $process = new Process([$commandline]);
             $process->setTimeout(600);
             $process->setWorkingDirectory($this->projectDir);
             $process->run();
