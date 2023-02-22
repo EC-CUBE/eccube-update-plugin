@@ -323,15 +323,15 @@ class ConfigController extends AbstractController
         $fs->mirror($this->dataDir, $this->projectDir);
 
         $commands = [
-            'cache:clear --no-warmup',
-            'cache:warmup --no-optional-warmers',
-            'eccube:update420to421:plugin-already-installed',
-            'eccube:generate:proxies',
-            'doctrine:schema:update --dump-sql -f',
-            'doctrine:migrations:migrate --no-interaction',
-            'cache:clear --no-warmup',
-            'cache:warmup --no-optional-warmers',
-            'eccube:update420to421:dump-autoload',
+            ['cache:clear', '--no-warmup'],
+            ['cache:warmup', '--no-optional-warmers'],
+            ['eccube:update420to421:plugin-already-installed'],
+            ['eccube:generate:proxies'],
+            ['doctrine:schema:update', '--dump-sql', '-f'],
+            ['doctrine:migrations:migrate', '--no-interaction'],
+            ['cache:clear', '--no-warmup'],
+            ['cache:warmup', '--no-optional-warmers'],
+            ['eccube:update420to421:dump-autoload'],
         ];
 
         log_info('Start update commands');
@@ -340,20 +340,19 @@ class ConfigController extends AbstractController
             echo $command.'...<br>';
             flush();
             ob_start();
-            $commandline = $phpPath.' bin/console '.$command;
-            log_info('Execute '.$commandline);
-            $process = new Process([$commandline]);
+            log_info('Execute '.implode(' ', $command));
+            $process = new Process(array_merge([$phpPath, 'bin/console'], $command));
             $process->setTimeout(600);
             $process->setWorkingDirectory($this->projectDir);
             $process->run();
 
             if (!$process->isSuccessful()) {
                 $process->getOutput();
-                log_error('Fail '.$commandline);
+                log_error('Fail '.implode(' ', $command));
                 log_error($process->getOutput());
                 break;
             }
-            log_info('Done '.$commandline);
+            log_info('Done '.implode(' ', $command));
         }
         log_info('End update commands');
 
