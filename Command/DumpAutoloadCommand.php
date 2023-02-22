@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater411to412\Command;
+namespace Plugin\EccubeUpdater420to421\Command;
 
 use Eccube\Service\Composer\ComposerApiService;
 use Symfony\Component\Console\Command\Command;
@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DumpAutoloadCommand extends Command
 {
-    protected static $defaultName = 'eccube:update411to412:dump-autoload';
+    protected static $defaultName = 'eccube:update420to421:dump-autoload';
 
     /**
      * @var ContainerInterface
