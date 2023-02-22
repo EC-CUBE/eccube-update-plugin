@@ -310,7 +310,6 @@ class ConfigController extends AbstractController
         $this->clearComposerCache();
         $this->clearProxies();
         $this->clearSessions();
-        $this->removeDeletedFiles41();
         // XXX bin/console cache:clear コマンドが失敗するため、このメソッドで強制的にキャッシュを削除する
         $this->forceClearCaches();
 
@@ -432,18 +431,6 @@ location.href = '$completeUrl'
         foreach ($finder->files() as $file) {
             $fs->remove($file->getRealPath());
         }
-    }
-
-    /**
-     * 4.1で削除されたファイルを削除する
-     */
-    private function removeDeletedFiles41()
-    {
-        $fs = new Filesystem();
-        $fs->remove($this->projectDir.'/src/Eccube/Application.php');
-        $fs->remove($this->projectDir.'/src/Eccube/Doctrine/EventSubscriber/LoadEventSubscriber.php');
-        $fs->remove($this->projectDir.'/src/Eccube/ServiceProvider/EccubeServiceProvider.php');
-        $fs->remove($this->projectDir.'/src/Eccube/ServiceProvider/ServiceProviderInterface.php');
     }
 
     /**
