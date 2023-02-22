@@ -337,7 +337,7 @@ class ConfigController extends AbstractController
         log_info('Start update commands');
         foreach ($commands as $command) {
             while (@ob_end_flush());
-            echo $command.'...<br>';
+            echo implode(' ', $command).'...<br>';
             flush();
             ob_start();
             log_info('Execute '.implode(' ', $command));
