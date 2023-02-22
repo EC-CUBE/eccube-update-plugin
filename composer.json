@@ -1,6 +1,6 @@
 {
   "name": "ec-cube/eccubeupdater420to421",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "EC-CUBEアップデートプラグイン",
   "type": "eccube-plugin",
   "require": {
