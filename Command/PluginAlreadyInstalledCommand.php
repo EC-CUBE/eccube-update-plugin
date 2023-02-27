@@ -97,6 +97,10 @@ class PluginAlreadyInstalledCommand extends Command
             $packageNames[] = 'ec-cube/'.strtolower($Plugin->getCode()).':'.$Plugin->getVersion();
         }
 
+        // 4.2.0-4.2.1
+        $packageNames[] = "symfony/password-hasher:^5.4";
+        $packageNames[] = "softcreatr/jsonpath:0.7.5";
+
         if ($packageNames) {
             try {
                 $this->composerApiService->execRequire(implode(' ', $packageNames));
