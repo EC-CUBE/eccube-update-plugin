@@ -150,7 +150,30 @@ class ConfigController extends AbstractController
         return [
             'supported' => $this->supported,
             'php_path' => $phpPath,
+            'app_template' => $this->checkAppTemplate()
         ];
+    }
+
+    // 4.2.0-4.2.1
+    private function checkAppTemplate()
+    {
+        $files = [
+            'app/template/admin/Store/authentication_setting.twig',
+            'app/template/admin/Store/plugin_confirm.twig',
+            'app/template/default/Product/detail.twig',
+            'app/template/default/Product/list.twig',
+            'app/template/admin/Content/file.twig',
+        ];
+
+        $exists = [];
+        foreach ($files as $file) {
+            $path = $this->projectDir.'/'.$file;
+            if (file_exists($path)) {
+                $exists[] = $path;
+            }
+        }
+
+        return $exists;
     }
 
     /**
