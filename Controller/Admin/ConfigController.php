@@ -310,8 +310,6 @@ class ConfigController extends AbstractController
         $this->clearComposerCache();
         $this->clearProxies();
         $this->clearSessions();
-        // XXX bin/console cache:clear コマンドが失敗するため、このメソッドで強制的にキャッシュを削除する
-        $this->forceClearCaches();
 
         while (@ob_end_flush());
         echo 'アップデートを実行しています...<br>';
@@ -320,7 +318,17 @@ class ConfigController extends AbstractController
 
         // 更新ファイルで上書き
         $fs = new Filesystem();
+        $fs->remove($this->dataDir.'/vendor/composer/installed.json');
+        $fs->remove($this->dataDir.'/composer.json');
         $fs->mirror($this->dataDir, $this->projectDir);
+
+        $this->composerApiService->runCommand([
+            'command' => 'dump-autoload',
+            '--no-dev' => env('APP_ENV') === 'prod',
+        ], null, true);
+
+        // XXX bin/console cache:clear コマンドが失敗するため、このメソッドで強制的にキャッシュを削除する
+        $this->forceClearCaches();
 
         $commands = [
             ['cache:clear', '--no-warmup'],
