@@ -39,7 +39,7 @@ git init .
 git add .
 git commit -m 'first commit'
 #curl https://downloads.ec-cube.net/src/eccube-${TO}.tar.gz | tar xz --strip-components 1
-curl -L https://github.com/EC-CUBE/ec-cube/releases/download/4.2.2-20230606/eccube-4.2.2-20230606.tar.gz | tar xz --strip-components 1
+curl -L https://github.com/EC-CUBE/ec-cube/releases/download/4.2.2-20230616/eccube-4.2.2-20230616.tar.gz | tar xz --strip-components 1
 git add .
 git diff --name-only --cached > ${WORK_DIR}/update_files.txt
 
