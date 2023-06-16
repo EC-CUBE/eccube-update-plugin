@@ -1,5 +1,5 @@
 {
-  "name": "ec-cube/eccubeupdater420to421",
+  "name": "ec-cube/eccubeupdater421to422",
   "version": "1.0.0",
   "description": "EC-CUBEアップデートプラグイン",
   "type": "eccube-plugin",
@@ -7,6 +7,6 @@
     "ec-cube/plugin-installer": "~0.0.6 || ^2.0"
   },
   "extra": {
-    "code": "EccubeUpdater420to421"
+    "code": "EccubeUpdater421to422"
   }
 }
