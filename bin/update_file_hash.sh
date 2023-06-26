@@ -34,11 +34,11 @@ mkdir -p ${WORK_DIR}/ec-cube
 mkdir -p ${WORK_DIR}/update_file
 
 cd ${WORK_DIR}/ec-cube
-curl https://downloads.ec-cube.net/src/eccube-${FROM}.tar.gz | tar xz --strip-components 1
+curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${FROM}/eccube-${FROM}.tar.gz | tar xz --strip-components 1
 git init .
 git add .
 git commit -m 'first commit'
-curl https://downloads.ec-cube.net/src/eccube-${TO}.tar.gz | tar xz --strip-components 1
+curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${TO}/eccube-${TO}.tar.gz | tar xz --strip-components 1
 git add .
 git diff --name-only --cached > ${WORK_DIR}/update_files.txt
 
