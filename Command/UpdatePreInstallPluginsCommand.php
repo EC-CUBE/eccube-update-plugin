@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater420to421\Command;
+namespace Plugin\EccubeUpdater421to422\Command;
 
 use Eccube\Repository\BaseInfoRepository;
 use Eccube\Repository\PluginRepository;
@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class UpdatePreInstallPluginsCommand extends Command
 {
-    protected static $defaultName = 'eccube:update420to421:update-pre-install-plugins';
+    protected static $defaultName = 'eccube:update421to422:update-pre-install-plugins';
 
     /**
      * @var ContainerInterface
