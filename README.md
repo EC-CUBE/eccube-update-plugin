@@ -20,14 +20,14 @@ brew install coreutils
 vi bin/replace_version.sh
 ```
 
-NEXT_VERSIONには、アップデート後に変わるバージョン（From-Toでいうとなるもの）を指定します。
+NEXT_VERSIONには、アップデート後のバージョンを指定します。
 例えば、4.2.2の場合は422と記載します。
 
 ```sh
 NEXT_VERSION=422
 ```
 
-OVERRIDEの部分は、前回更新したものが何から何への更新だったのを記載します。
+OVERRIDEの部分は、前回更新したものが何から何への更新だったのかを記載します。
 例えば、4.2.0から4.2.1への更新だった場合は以下のような記載になります
 
 ```sh
@@ -35,6 +35,12 @@ OVERRIDE_CURRENT_FROM=420
 OVERRIDE_CURRENT_TO=421
 OVERRIDE_CURRENT_FROM_STR=4.2.0
 OVERRIDE_CURRENT_TO_STR=4.2.1
+```
+
+* スクリプト実行
+
+```sh
+bin/replace_version.sh
 ```
 
 ### 2. 更新ファイルを作成
@@ -52,12 +58,13 @@ TO=4.2.2
 ```
 
 - 補足
-上記のFROMの変数は以下のように、ソースコードの取得の際に使用します。
+上記のFROM/TOの変数は以下のように、ソースコードの取得の際に使用します。
 もし、テスト用にPreReleaseのバージョンなどで試したい場合は、変数の値を適切なものに書き換えてください。
+（例えば、`4.2.2-20230616` のように）
 
 ```sh
-curl https://downloads.ec-cube.net/src/eccube-${FROM}.tar.gz | tar xz --strip-components 1
-curl https://downloads.ec-cube.net/src/eccube-${TO}.tar.gz | tar xz --strip-components 1
+curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${FROM}/eccube-${FROM}.tar.gz | tar xz --strip-components 1
+curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${TO}/eccube-${TO}.tar.gz | tar xz --strip-components 1
 ```
 
 ### 3. スクリプト実行
