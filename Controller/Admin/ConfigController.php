@@ -333,10 +333,10 @@ class ConfigController extends AbstractController
         $commands = [
             ['cache:clear', '--no-warmup'],
             ['cache:warmup', '--no-optional-warmers'],
-            ['eccube:update421to422:plugin-already-installed'],
             ['eccube:generate:proxies'],
             ['doctrine:schema:update', '--dump-sql', '-f'],
             ['doctrine:migrations:migrate', '--no-interaction'],
+            ['eccube:update421to422:plugin-already-installed'],
             ['cache:clear', '--no-warmup'],
             ['cache:warmup', '--no-optional-warmers'],
             ['eccube:update421to422:dump-autoload'],
