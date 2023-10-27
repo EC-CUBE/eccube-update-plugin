@@ -4,8 +4,8 @@ set -x
 
 BASE_DIR=$(pwd)
 WORK_DIR=${BASE_DIR}/work
-FROM=4.2.1
-TO=4.2.2
+FROM=4.2.2
+TO=4.2.3
 
 # 差分チェックの対象外ファイルの一覧
 # ここで指定したファイルは, プラグインの差分チェック時の対象外になります
@@ -38,7 +38,8 @@ curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${FROM}/eccube-${FR
 git init .
 git add .
 git commit -m 'first commit'
-curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${TO}/eccube-${TO}.tar.gz | tar xz --strip-components 1
+#curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${TO}/eccube-${TO}.tar.gz | tar xz --strip-components 1
+curl -L https://github.com/EC-CUBE/ec-cube4-private/releases/download/${TO}/eccube-${TO}.tar.gz | tar xz --strip-components 1
 git add .
 git diff --name-only --cached > ${WORK_DIR}/update_files.txt
 

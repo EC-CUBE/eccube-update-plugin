@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\EccubeUpdater421to422\Command;
+namespace Plugin\EccubeUpdater422to423\Command;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -28,7 +28,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PluginAlreadyInstalledCommand extends Command
 {
-    protected static $defaultName = 'eccube:update421to422:plugin-already-installed';
+    protected static $defaultName = 'eccube:update422to423:plugin-already-installed';
 
     /**
      * @var ContainerInterface
@@ -97,7 +97,7 @@ class PluginAlreadyInstalledCommand extends Command
             $packageNames[] = 'ec-cube/'.strtolower($Plugin->getCode()).':'.$Plugin->getVersion();
         }
 
-        // 4.2.1-4.2.2
+        // 4.2.2-4.2.3
         $packageNames[] = "symfony/password-hasher:^5.4";
         $packageNames[] = "softcreatr/jsonpath:0.7.5";
 
