@@ -38,7 +38,8 @@ curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${FROM}/eccube-${FR
 git init .
 git add .
 git commit -m 'first commit'
-curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${TO}/eccube-${TO}.tar.gz | tar xz --strip-components 1
+curl -L https://downloads.ec-cube.net/src/eccube-4.2.3-20231031.tar.gz | tar xz --strip-components 1
+#curl -L https://github.com/EC-CUBE/ec-cube/releases/download/${TO}/eccube-${TO}.tar.gz | tar xz --strip-components 1
 git add .
 git diff --name-only --cached > ${WORK_DIR}/update_files.txt
 
